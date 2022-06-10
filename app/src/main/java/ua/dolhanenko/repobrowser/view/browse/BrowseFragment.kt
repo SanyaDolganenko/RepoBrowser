@@ -11,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_browse.*
 import kotlinx.android.synthetic.main.fragment_browse.view.*
 import ua.dolhanenko.repobrowser.R
@@ -52,7 +53,19 @@ class BrowseFragment : Fragment() {
 
     private fun initRecyclerView(root: View) {
         root.recyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = object : LinearLayoutManager(requireContext()) {
+                override fun onScrollStateChanged(state: Int) {
+                    super.onScrollStateChanged(state)
+                    if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (findLastCompletelyVisibleItemPosition() ==
+                            this@BrowseFragment.adapter.dataList.lastIndex
+                        ) {
+                            Log.d("BROWSE_FR", "Reached end of list. Notifying VM.")
+                            viewModel.onPageEndReached()
+                        }
+                    }
+                }
+            }
             adapter = this@BrowseFragment.adapter
         }
     }

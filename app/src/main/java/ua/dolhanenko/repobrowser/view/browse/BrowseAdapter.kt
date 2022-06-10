@@ -24,6 +24,7 @@ class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val model = dataList[position]
         holder.itemView.apply {
+            indexTextView.text = (position + 1).toString()
             repoTitle.text = model.title
             repoDescription.text = model.description
             language.text = model.language ?: ""
