@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RepoBrowser</string>
+    <string name="hint_browse_repos">Browse repos</string>
 </resources>

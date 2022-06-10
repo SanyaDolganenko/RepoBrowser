@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="progress_bar_dimen">20dp</dimen>
+    <dimen name="margin_large">10dp</dimen>
+    <dimen name="text_size_small">10sp</dimen>
+</resources>

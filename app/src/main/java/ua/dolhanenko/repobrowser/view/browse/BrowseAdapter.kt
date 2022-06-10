@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.browse_list_item.view.*
 import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
@@ -21,9 +22,16 @@ class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = dataList[position]
-        holder.itemView.repoTitle.text = "$position ${data.name}"
-
+        val model = dataList[position]
+        holder.itemView.apply {
+            repoTitle.text = model.title
+            repoDescription.text = model.description
+            language.text = model.language ?: ""
+            watchCount.text = model.watchers.toString()
+            starCount.text = model.stars.toString()
+            userName.text = model.owner.name
+            Glide.with(this).load(model.owner.avatarUrl).into(avatarView)
+        }
     }
 
     override fun getItemCount(): Int = dataList.size
