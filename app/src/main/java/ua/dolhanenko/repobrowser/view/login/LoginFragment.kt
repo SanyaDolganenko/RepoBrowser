@@ -10,11 +10,13 @@ import androidx.fragment.app.viewModels
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import ua.dolhanenko.repobrowser.R
+import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
+import ua.dolhanenko.repobrowser.utils.toVisibility
 
 
 class LoginFragment : Fragment() {
-    private val viewModel: LoginVM by viewModels()
+    private val viewModel: LoginVM by viewModels { RepoApp.vmFactory }
     private var callback: Callback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +54,11 @@ class LoginFragment : Fragment() {
                 runOnUiThread {
                     if (it) callback?.onLoginSuccess()
                 }
+            }
+        }
+        viewModel.isLoggingIn.observe(this) {
+            runOnUiThread {
+                loadingLayout.visibility = it.toVisibility(true)
             }
         }
     }
