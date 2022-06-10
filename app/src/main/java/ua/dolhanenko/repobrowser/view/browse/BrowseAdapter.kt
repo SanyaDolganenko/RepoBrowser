@@ -6,6 +6,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.browse_list_item.view.*
@@ -16,6 +17,11 @@ import ua.dolhanenko.repobrowser.utils.colorPrimary
 
 class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
     var dataList: List<RepositoryModel> = listOf()
+        set(value) {
+            val callback = BrowseDiffCallback(field, value)
+            field = value
+            DiffUtil.calculateDiff(callback).dispatchUpdatesTo(this)
+        }
     var currentFilter: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,5 +68,24 @@ class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
             }
             itemView.repoTitle.text = spanned
         }
+    }
+
+    class BrowseDiffCallback(
+        private val oldList: List<RepositoryModel>,
+        private val newList: List<RepositoryModel>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return oldItem == newItem
+        }
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
     }
 }

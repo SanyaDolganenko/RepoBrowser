@@ -76,7 +76,6 @@ class BrowseFragment : Fragment() {
             it?.let {
                 runOnUiThread {
                     adapter.dataList = it
-                    adapter.notifyDataSetChanged()
                 }
             }
         }
