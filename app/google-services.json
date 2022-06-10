@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "970048404113",
+    "project_id": "repobrowser-195e5",
+    "storage_bucket": "repobrowser-195e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970048404113:android:8db8ca80c2899d4abf5d30",
+        "android_client_info": {
+          "package_name": "ua.dolhanenko.repobrowser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970048404113-dhkgi4mgajqkmebm2eloubetu7pb3j8p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.dolhanenko.repobrowser",
+            "certificate_hash": "d8699f58ade6de905e77a13836e218ab4df2545e"
+          }
+        },
+        {
+          "client_id": "970048404113-r8gc0p35ei94t8pb00j0nrv27lo85tec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQp0CWh7dgNBedAEXLNvkBcz6EygANJJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970048404113-r8gc0p35ei94t8pb00j0nrv27lo85tec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
