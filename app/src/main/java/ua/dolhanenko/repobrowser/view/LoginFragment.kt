@@ -17,8 +17,8 @@ class LoginFragment : Fragment() {
 
     private val viewModel: LoginVM by viewModels()
 
-    override fun onStart() {
-        super.onStart()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         subscribe()
     }
 
@@ -35,8 +35,7 @@ class LoginFragment : Fragment() {
     private fun initViews(root: View) {
         root.buttonLogin.setOnClickListener {
             val login = loginInputEditText.text?.toString() ?: ""
-            val pass = passwordInputEditText.text?.toString() ?: ""
-            viewModel.onLoginClick(login, pass)
+            viewModel.onLoginClick(requireActivity(), login)
         }
     }
 
