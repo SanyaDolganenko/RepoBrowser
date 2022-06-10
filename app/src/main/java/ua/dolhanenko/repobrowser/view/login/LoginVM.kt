@@ -1,14 +1,17 @@
-package ua.dolhanenko.repobrowser.view
+package ua.dolhanenko.repobrowser.view.login
 
 import android.app.Activity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
+import ua.dolhanenko.repobrowser.RepoApp
 
 
 class LoginVM : ViewModel() {
-    val result: MutableLiveData<String?> = MutableLiveData()
+    val result: MutableLiveData<Boolean?> = MutableLiveData()
 
     fun onLoginClick(activity: Activity, login: String) {
         val provider = OAuthProvider.newBuilder("github.com")
@@ -19,7 +22,7 @@ class LoginVM : ViewModel() {
             .startActivityForSignInWithProvider(activity, provider)
             .addOnCompleteListener {
                 when {
-                    it.isSuccessful -> onLoginSuccess()
+                    it.isSuccessful -> onLoginSuccess(it.result)
                     it.isCanceled -> onLoginCancel()
                     else -> onLoginFail()
                 }
@@ -31,11 +34,13 @@ class LoginVM : ViewModel() {
 
     }
 
-    private fun onLoginSuccess() {
-        result.postValue("Good")
+    private fun onLoginSuccess(authResult: AuthResult) {
+        RepoApp.activeToken = (authResult.credential as OAuthCredential).accessToken
+        result.postValue(RepoApp.activeToken != null)
+
     }
 
     private fun onLoginFail() {
-        result.postValue("Bad")
+        result.postValue(false)
     }
 }
