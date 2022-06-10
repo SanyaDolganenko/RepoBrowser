@@ -32,4 +32,6 @@ open class BaseApiRepository {
             }
         }
     }
+
+     class NetworkException(val code: Int, message: String) : Exception(message)
 }

@@ -10,11 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_browse.view.*
 import ua.dolhanenko.repobrowser.R
+import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
 
 
 class BrowseFragment : Fragment() {
-    private val viewModel: BrowseVM by viewModels()
+    private val viewModel: BrowseVM by viewModels { RepoApp.vmFactory }
     private val adapter: BrowseAdapter = BrowseAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +35,7 @@ class BrowseFragment : Fragment() {
 
     private fun initViews(root: View) {
         root.searchEditText.addTextChangedListener {
-            viewModel.onSearchInput(it?.toString() )
+            viewModel.onFilterInput(it?.toString())
         }
         initRecyclerView(root)
     }

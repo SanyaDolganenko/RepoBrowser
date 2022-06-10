@@ -1,4 +1,4 @@
-package ua.dolhanenko.repobrowser.view
+package ua.dolhanenko.repobrowser.view.host
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

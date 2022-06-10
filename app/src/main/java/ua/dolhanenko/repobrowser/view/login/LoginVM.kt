@@ -7,7 +7,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
-import ua.dolhanenko.repobrowser.RepoApp
+import ua.dolhanenko.repobrowser.application.RepoApp
 
 
 class LoginVM : ViewModel() {

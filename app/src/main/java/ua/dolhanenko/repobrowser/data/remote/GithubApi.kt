@@ -25,5 +25,5 @@ interface GithubApi {
         @Query("q", encoded = true) query: String?,
         @Query("sort") sortBy: String = SortingField.STARS.value,
         @Query("order") order: String = OrderDirection.DESCENDING.value,
-    ): Deferred<Response<FilteredRepos>>
+    ): Deferred<Response<FilteredReposResponse>>
 }

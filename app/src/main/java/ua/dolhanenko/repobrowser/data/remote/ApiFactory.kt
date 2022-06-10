@@ -7,11 +7,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ua.dolhanenko.repobrowser.RepoApp
+import ua.dolhanenko.repobrowser.application.RepoApp
 import java.util.concurrent.TimeUnit
 
 
-object ApiFactory {
+class ApiFactory {
     private fun Request.Builder.setupAuth(): Request.Builder {
         addHeader(
             "Authorization",

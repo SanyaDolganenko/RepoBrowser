@@ -6,12 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.browse_list_item.view.*
 import ua.dolhanenko.repobrowser.R
-import ua.dolhanenko.repobrowser.data.remote.RepoResponse
+import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 
 
 class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
-    var dataList: List<RepoResponse> = listOf()
-
+    var dataList: List<RepositoryModel> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(
