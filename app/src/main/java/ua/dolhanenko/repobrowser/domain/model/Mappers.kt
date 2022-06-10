@@ -11,7 +11,7 @@ fun RepoResponse.toModel(): RepositoryModel {
         name,
         description ?: "",
         stargazers_count ?: 0,
-        watchers_count ?: 0, language, url ?: "",
+        watchers_count ?: 0, language, html_url ?: "",
         owner?.toModel() ?: OwnerModel("", "")
     )
 }

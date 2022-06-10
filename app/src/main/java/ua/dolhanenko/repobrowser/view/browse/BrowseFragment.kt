@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,14 +17,13 @@ import kotlinx.android.synthetic.main.fragment_browse.*
 import kotlinx.android.synthetic.main.fragment_browse.view.*
 import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.application.RepoApp
-import ua.dolhanenko.repobrowser.utils.Constants
-import ua.dolhanenko.repobrowser.utils.runOnUiThread
-import ua.dolhanenko.repobrowser.utils.toVisibility
+import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.utils.*
 
 
-class BrowseFragment : Fragment() {
+class BrowseFragment : Fragment(), BrowseAdapter.Callback {
     private val viewModel: BrowseVM by viewModels { RepoApp.vmFactory }
-    private val adapter: BrowseAdapter = BrowseAdapter()
+    private val adapter: BrowseAdapter = BrowseAdapter(this)
     private val inputHandler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,21 +54,32 @@ class BrowseFragment : Fragment() {
 
     private fun initRecyclerView(root: View) {
         root.recyclerView.apply {
-            layoutManager = object : LinearLayoutManager(requireContext()) {
-                override fun onScrollStateChanged(state: Int) {
-                    super.onScrollStateChanged(state)
-                    if (state == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (findLastCompletelyVisibleItemPosition() ==
-                            this@BrowseFragment.adapter.dataList.lastIndex
-                        ) {
-                            Log.d("BROWSE_FR", "Reached end of list. Notifying VM.")
-                            viewModel.onPageEndReached()
-                        }
+            layoutManager = createPaginationAwareLayoutManager()
+            adapter = this@BrowseFragment.adapter
+        }
+    }
+
+    private fun createPaginationAwareLayoutManager(): RecyclerView.LayoutManager {
+        return object : LinearLayoutManager(requireContext()) {
+            override fun onScrollStateChanged(state: Int) {
+                super.onScrollStateChanged(state)
+                if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (findLastCompletelyVisibleItemPosition() ==
+                        this@BrowseFragment.adapter.dataList.lastIndex
+                    ) {
+                        Log.d("BROWSE_FR", "Reached end of list. Notifying VM.")
+                        viewModel.onPageEndReached()
                     }
                 }
             }
-            adapter = this@BrowseFragment.adapter
         }
+    }
+
+    override fun onItemClick(model: RepositoryModel, position: Int) {
+        //TODO notify VM so that the model is saved to DB
+        //TODO visually mark the item as "read"
+        Toast.makeText(requireContext(), position.toString(), Toast.LENGTH_SHORT).show()
+        model.url.toUri()?.openInDefaultBrowser(requireContext())
     }
 
     private fun subscribeForData() {

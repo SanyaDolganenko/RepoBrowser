@@ -7,7 +7,7 @@ data class RepoResponse(
     val description: String?,
     val stargazers_count: Long?, val watchers_count: Long?,
     val language: String?,
-    val url: String?,
+    val html_url: String?,
     val owner: Owner?
 )
 

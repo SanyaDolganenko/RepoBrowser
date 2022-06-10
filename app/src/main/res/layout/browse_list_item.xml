@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
     app:cardUseCompatPadding="true"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -71,7 +74,7 @@
             app:layout_constraintBottom_toBottomOf="@id/repoTitle"
             app:layout_constraintEnd_toStartOf="@id/watchCount"
             app:layout_constraintTop_toTopOf="@id/repoTitle"
-            app:tint="?indicatorColor"  />
+            app:tint="?indicatorColor" />
 
         <TextView
             android:id="@+id/watchCount"

@@ -15,7 +15,7 @@ import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.utils.colorPrimary
 
 
-class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
+class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
     var dataList: List<RepositoryModel> = listOf()
         set(value) {
             val callback = BrowseDiffCallback(field, value)
@@ -50,6 +50,9 @@ class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
                 starCount.text = model.stars.toString()
                 userName.text = model.owner.name
                 Glide.with(this).load(model.owner.avatarUrl).into(avatarView)
+                root.setOnClickListener {
+                    callback.onItemClick(model, adapterPosition)
+                }
             }
         }
 
@@ -87,5 +90,9 @@ class BrowseAdapter : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
+    }
+
+    interface Callback {
+        fun onItemClick(model: RepositoryModel, position: Int)
     }
 }
