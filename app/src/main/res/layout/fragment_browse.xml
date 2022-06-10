@@ -20,6 +20,15 @@
             android:hint="@string/hint_browse_repos" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/countTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_large"
+        app:layout_constraintBottom_toBottomOf="@id/inputLayout"
+        app:layout_constraintEnd_toEndOf="@id/inputLayout"
+        app:layout_constraintTop_toTopOf="@id/inputLayout" />
+
     <ProgressBar
         android:id="@+id/progressPar"
         android:layout_width="@dimen/progress_bar_dimen"

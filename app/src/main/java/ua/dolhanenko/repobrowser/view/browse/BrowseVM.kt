@@ -17,6 +17,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel() {
     val filteredRepositories: MutableLiveData<List<RepositoryModel>?> = MutableLiveData()
+    val filteredFound: MutableLiveData<Long?> = MutableLiveData()
     val isDataLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private var lastLoadedPage = AtomicInteger(0)
     private var lastFilter: String? = null
@@ -47,6 +48,7 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
         filter: String?,
         onLoaded: (List<RepositoryModel>?) -> Unit
     ) {
+        filteredFound.postValue(null)
         if (filter.isNullOrEmpty()) {
             filteredRepositories.postValue(listOf())
             return
@@ -68,6 +70,9 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
                 })
             }
             val loadedPages = results.awaitAll()
+            if (loadedPages.filterNotNull().isNotEmpty()) {
+                filteredFound.postValue(loadedPages.first()?.foundInTotal)
+            }
             val combinedNewPages = loadedPages
                 .sortedBy { it?.pageNumber }
                 .flatMap { it?.items ?: listOf() }

@@ -45,6 +45,7 @@ class BrowseFragment : Fragment() {
             inputHandler.removeCallbacksAndMessages(null)
             inputHandler.postDelayed({
                 Log.d("BROWSE_FR", "Executing timer to apply filter")
+                adapter.currentFilter = it?.toString()
                 viewModel.onFilterInput(it?.toString())
             }, Constants.FILTER_DELAY_MS)
         }
@@ -82,6 +83,11 @@ class BrowseFragment : Fragment() {
         viewModel.isDataLoading.observe(this) {
             runOnUiThread {
                 progressPar.visibility = it.toVisibility()
+            }
+        }
+        viewModel.filteredFound.observe(this) {
+            runOnUiThread {
+                countTextView.text = it?.toString()
             }
         }
     }
