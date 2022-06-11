@@ -112,6 +112,7 @@
             android:id="@+id/unreadIndicator"
             android:layout_width="5dp"
             android:layout_height="0dp"
+            android:visibility="invisible"
             android:background="?colorSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

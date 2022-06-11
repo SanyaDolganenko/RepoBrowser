@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +17,10 @@ import kotlinx.android.synthetic.main.fragment_browse.view.*
 import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
-import ua.dolhanenko.repobrowser.utils.*
+import ua.dolhanenko.repobrowser.utils.Constants
+import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
+import ua.dolhanenko.repobrowser.utils.runOnUiThread
+import ua.dolhanenko.repobrowser.utils.toVisibility
 
 
 class BrowseFragment : Fragment(), BrowseAdapter.Callback {
@@ -76,13 +78,13 @@ class BrowseFragment : Fragment(), BrowseAdapter.Callback {
     }
 
     override fun onItemClick(model: RepositoryModel, position: Int) {
-        //TODO notify VM so that the model is saved to DB
-        //TODO visually mark the item as "read"
-        Toast.makeText(requireContext(), position.toString(), Toast.LENGTH_SHORT).show()
-        model.url.toUri()?.openInDefaultBrowser(requireContext())
+        viewModel.onRepositoryClick(model, position)
     }
 
     private fun subscribeForData() {
+        viewModel.requestViewUrl = {
+            it?.openInDefaultBrowser(requireContext())
+        }
         viewModel.filteredRepositories.observe(this) {
             it?.let {
                 runOnUiThread {

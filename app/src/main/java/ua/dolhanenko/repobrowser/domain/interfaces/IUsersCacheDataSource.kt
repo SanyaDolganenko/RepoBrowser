@@ -1,12 +1,12 @@
 package ua.dolhanenko.repobrowser.domain.interfaces
 
-import ua.dolhanenko.repobrowser.data.local.entity.AppUser
+import ua.dolhanenko.repobrowser.domain.model.UserModel
 
 
 interface IUsersCacheDataSource {
-    fun getActiveUser(): AppUser?
+    fun getActiveUser(): UserModel?
 
-    fun saveActiveUser(user: AppUser)
+    fun saveActiveUser(user: UserModel)
 
-    fun deleteUser(user: AppUser)
+    fun deleteUser(user: UserModel)
 }

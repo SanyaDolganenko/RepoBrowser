@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.browse_list_item.view.*
 import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.utils.colorPrimary
+import ua.dolhanenko.repobrowser.utils.toVisibility
 
 
 class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
@@ -49,6 +50,7 @@ class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter
                 watchCount.text = model.watchers.toString()
                 starCount.text = model.stars.toString()
                 userName.text = model.owner.name
+                unreadIndicator.visibility = model.isRead.toVisibility(false)
                 Glide.with(this).load(model.owner.avatarUrl).into(avatarView)
                 root.setOnClickListener {
                     callback.onItemClick(model, adapterPosition)
@@ -84,7 +86,7 @@ class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem == newItem
+            return oldItem == newItem && oldItem.isRead == newItem.isRead
         }
 
         override fun getOldListSize(): Int = oldList.size

@@ -1,5 +1,6 @@
 package ua.dolhanenko.repobrowser.view.browse
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,17 +10,44 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
-import ua.dolhanenko.repobrowser.domain.usecases.FilterRepositoriesUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.FilterReposUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.GetCachedReposUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.SaveClickedRepoUseCase
 import ua.dolhanenko.repobrowser.utils.Constants
+import ua.dolhanenko.repobrowser.utils.runOnUiThread
+import ua.dolhanenko.repobrowser.utils.toUri
 import java.util.concurrent.atomic.AtomicInteger
 
 
-class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel() {
+class BrowseVM(
+    private val filterUseCase: FilterReposUseCase,
+    private val saveClickedRepoUseCase: SaveClickedRepoUseCase,
+    private val getCachedReposUseCase: GetCachedReposUseCase
+) : ViewModel() {
     val filteredRepositories: MutableLiveData<List<RepositoryModel>?> = MutableLiveData()
     val filteredFound: MutableLiveData<Long?> = MutableLiveData()
     val isDataLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    var requestViewUrl: (Uri?) -> Unit = {}
     private var lastLoadedPage = AtomicInteger(0)
     private var lastFilter: String? = null
+    private var readItemIds: List<String> = mutableListOf()
+
+    init {
+        loadCachedRepos()
+    }
+
+    fun onRepositoryClick(model: RepositoryModel, position: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveClickedRepoUseCase(model)
+            (readItemIds as MutableList).add(model.id)
+            updateLocalRepositoryModel(position) {
+                it.isRead = true
+            }
+            runOnUiThread {
+                requestViewUrl(model.url.toUri())
+            }
+        }
+    }
 
     fun onPageEndReached() {
         if (lastFilter.isNullOrEmpty()) {
@@ -66,6 +94,14 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
         }
     }
 
+    private fun loadCachedRepos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCachedReposUseCase()?.map { it.id }?.toMutableList()?.let {
+                readItemIds = it
+            }
+        }
+    }
+
     private fun appendRepositoriesForDisplay(number: Int, page: List<RepositoryModel>) {
         viewModelScope.launch(Dispatchers.Main) {
             val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
@@ -73,8 +109,25 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
                 "BROWSE_VM",
                 "Current size: ${current.size}. Appending page #$number ${page.size}"
             )
+            page.markReadItems()
             current.addAll(page)
             filteredRepositories.value = current
         }
+    }
+
+    private fun updateLocalRepositoryModel(position: Int, block: (RepositoryModel) -> Unit) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
+            if (position in current.indices) {
+                val copy = current[position].copy()
+                block(copy)
+                current[position] = copy
+                filteredRepositories.value = current
+            }
+        }
+    }
+
+    private fun List<RepositoryModel>.markReadItems() {
+        forEach { it.isRead = it.id in readItemIds }
     }
 }

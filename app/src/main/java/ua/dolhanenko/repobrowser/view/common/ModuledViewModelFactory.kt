@@ -19,7 +19,15 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
                 GetActiveUserUseCase(modules.usersCacheDataSource)
             )
             modelClass.isAssignableFrom(BrowseVM::class.java) -> BrowseVM(
-                FilterRepositoriesUseCase(modules.githubRepository)
+                FilterReposUseCase(modules.githubRepository),
+                SaveClickedRepoUseCase(
+                    modules.repositoriesCacheDataSource,
+                    modules.usersCacheDataSource
+                ),
+                GetCachedReposUseCase(
+                    modules.repositoriesCacheDataSource,
+                    modules.usersCacheDataSource
+                )
             )
             else -> super.create(modelClass)
         } as T

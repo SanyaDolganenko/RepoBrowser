@@ -1,6 +1,7 @@
 package ua.dolhanenko.repobrowser.domain.model
 
 import ua.dolhanenko.repobrowser.data.local.entity.AppUser
+import ua.dolhanenko.repobrowser.data.local.entity.Repository
 import ua.dolhanenko.repobrowser.data.remote.entity.FilteredReposResponse
 import ua.dolhanenko.repobrowser.data.remote.entity.Owner
 import ua.dolhanenko.repobrowser.data.remote.entity.RepoResponse
@@ -30,3 +31,17 @@ fun UserModel.toDbEntity(isActive: Boolean): AppUser =
     AppUser(id, userName, isActive, lastUsedToken)
 
 fun AppUser.toModel(): UserModel = UserModel(id, userName, lastUsedToken)
+
+fun RepositoryModel.toDbEntity(userId: Long): Repository {
+    return Repository(
+        id, userId, title, description, stars, watchers,
+        language, url, owner.name, owner.avatarUrl
+    )
+}
+
+fun Repository.toModel(): RepositoryModel {
+    return RepositoryModel(
+        id, title, description, stars, watchers,
+        language, url, OwnerModel(ownerName, ownerLogoUrl)
+    )
+}

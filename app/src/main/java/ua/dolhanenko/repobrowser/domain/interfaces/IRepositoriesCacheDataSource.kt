@@ -1,14 +1,14 @@
 package ua.dolhanenko.repobrowser.domain.interfaces
 
-import ua.dolhanenko.repobrowser.data.local.entity.Repository
+import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 
 
 interface IRepositoriesCacheDataSource {
-    fun getItems(byUserId: String): List<Repository>
+    fun getItems(byUserId: Long): List<RepositoryModel>
 
-    fun insertAll(repositories: List<Repository>)
+    fun insert(repository: RepositoryModel, forUserId: Long)
 
-    fun delete(repository: Repository)
+    fun delete(repository: RepositoryModel)
 
     fun deleteAll()
 }

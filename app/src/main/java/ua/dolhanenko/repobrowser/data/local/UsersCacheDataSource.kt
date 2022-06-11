@@ -1,21 +1,23 @@
 package ua.dolhanenko.repobrowser.data.local
 
 import ua.dolhanenko.repobrowser.data.local.dao.UsersCacheDao
-import ua.dolhanenko.repobrowser.data.local.entity.AppUser
 import ua.dolhanenko.repobrowser.domain.interfaces.IUsersCacheDataSource
+import ua.dolhanenko.repobrowser.domain.model.UserModel
+import ua.dolhanenko.repobrowser.domain.model.toDbEntity
+import ua.dolhanenko.repobrowser.domain.model.toModel
 
 
 class UsersCacheDataSource(private val dao: UsersCacheDao) : IUsersCacheDataSource {
-    override fun getActiveUser(): AppUser? {
-        return dao.getActiveUser()
+    override fun getActiveUser(): UserModel? {
+        return dao.getActiveUser()?.toModel()
     }
 
-    override fun saveActiveUser(user: AppUser) {
-        dao.save(user)
+    override fun saveActiveUser(user: UserModel) {
+        dao.save(user.toDbEntity(true))
         dao.setOtherUsersAsInactive(user.id)
     }
 
-    override fun deleteUser(user: AppUser) {
-        dao.delete(user)
+    override fun deleteUser(user: UserModel) {
+        dao.delete(user.toDbEntity(true))
     }
 }

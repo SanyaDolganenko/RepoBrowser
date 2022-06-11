@@ -6,7 +6,7 @@ import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
 
 
-class FilterRepositoriesUseCase(private val githubRepository: IGithubRepository) {
+class FilterReposUseCase(private val githubRepository: IGithubRepository) {
     operator fun invoke(
         filter: String,
         pageNumbers: IntArray
