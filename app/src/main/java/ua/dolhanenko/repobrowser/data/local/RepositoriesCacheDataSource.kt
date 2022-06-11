@@ -13,8 +13,8 @@ class RepositoriesCacheDataSource(private val dao: RepositoriesCacheDao) :
         return dao.getItems(byUserId).map { it.toModel() }
     }
 
-    override fun insert(repository: RepositoryModel, forUserId: Long) {
-        dao.insertAll(listOf(repository.toDbEntity(forUserId)))
+    override fun insert(repository: RepositoryModel, forUserId: Long, viewedAt: Long) {
+        dao.insertAll(listOf(repository.toDbEntity(forUserId, viewedAt)))
     }
 
     override fun delete(repository: RepositoryModel) {

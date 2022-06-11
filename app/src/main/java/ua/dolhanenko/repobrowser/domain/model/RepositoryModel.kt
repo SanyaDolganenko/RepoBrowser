@@ -1,5 +1,7 @@
 package ua.dolhanenko.repobrowser.domain.model
 
+import java.util.*
+
 
 data class RepositoryModel(
     val id: String, val title: String, val description: String,
@@ -7,6 +9,7 @@ data class RepositoryModel(
     val url: String, val owner: OwnerModel
 ) {
     var isRead: Boolean = false
+    var readAt: Date? = null
 }
 
 data class OwnerModel(val name: String, val avatarUrl: String)

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import ua.dolhanenko.repobrowser.application.ModulesManager
 import ua.dolhanenko.repobrowser.domain.usecases.*
 import ua.dolhanenko.repobrowser.view.browse.BrowseVM
+import ua.dolhanenko.repobrowser.view.history.HistoryVM
 import ua.dolhanenko.repobrowser.view.login.LoginVM
 
 
@@ -24,6 +25,12 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
                     modules.repositoriesCacheDataSource,
                     modules.usersCacheDataSource
                 ),
+                GetCachedReposUseCase(
+                    modules.repositoriesCacheDataSource,
+                    modules.usersCacheDataSource
+                )
+            )
+            modelClass.isAssignableFrom(HistoryVM::class.java) -> HistoryVM(
                 GetCachedReposUseCase(
                     modules.repositoriesCacheDataSource,
                     modules.usersCacheDataSource

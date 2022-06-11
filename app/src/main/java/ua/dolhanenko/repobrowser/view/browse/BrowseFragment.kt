@@ -21,11 +21,12 @@ import ua.dolhanenko.repobrowser.utils.Constants
 import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
 import ua.dolhanenko.repobrowser.utils.toVisibility
+import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
 
 
-class BrowseFragment : Fragment(), BrowseAdapter.Callback {
+class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
     private val viewModel: BrowseVM by viewModels { RepoApp.vmFactory }
-    private val adapter: BrowseAdapter = BrowseAdapter(this)
+    private val adapter: RepositoriesAdapter = RepositoriesAdapter(this)
     private val inputHandler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

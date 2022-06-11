@@ -6,6 +6,7 @@ import ua.dolhanenko.repobrowser.data.remote.entity.FilteredReposResponse
 import ua.dolhanenko.repobrowser.data.remote.entity.Owner
 import ua.dolhanenko.repobrowser.data.remote.entity.RepoResponse
 import ua.dolhanenko.repobrowser.data.remote.entity.UserResponse
+import java.util.*
 
 
 fun RepoResponse.toModel(): RepositoryModel {
@@ -32,9 +33,9 @@ fun UserModel.toDbEntity(isActive: Boolean): AppUser =
 
 fun AppUser.toModel(): UserModel = UserModel(id, userName, lastUsedToken)
 
-fun RepositoryModel.toDbEntity(userId: Long): Repository {
+fun RepositoryModel.toDbEntity(userId: Long, viewedAt: Long? = null): Repository {
     return Repository(
-        id, userId, title, description, stars, watchers,
+        id, viewedAt, userId, title, description, stars, watchers,
         language, url, owner.name, owner.avatarUrl
     )
 }
@@ -43,5 +44,10 @@ fun Repository.toModel(): RepositoryModel {
     return RepositoryModel(
         id, title, description, stars, watchers,
         language, url, OwnerModel(ownerName, ownerLogoUrl)
-    )
+    ).also { model ->
+        this.readAt?.let {
+            model.isRead = true
+            model.readAt = Date(it)
+        }
+    }
 }

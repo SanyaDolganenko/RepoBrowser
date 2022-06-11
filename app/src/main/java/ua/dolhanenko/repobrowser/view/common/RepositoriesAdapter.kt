@@ -1,4 +1,4 @@
-package ua.dolhanenko.repobrowser.view.browse
+package ua.dolhanenko.repobrowser.view.common
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -14,12 +14,16 @@ import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.utils.colorPrimary
 import ua.dolhanenko.repobrowser.utils.toVisibility
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter.ViewHolder>() {
+class RepositoriesAdapter(val callback: Callback) :
+    RecyclerView.Adapter<RepositoriesAdapter.ViewHolder>() {
     var dataList: List<RepositoryModel> = listOf()
         set(value) {
-            val callback = BrowseDiffCallback(field, value)
+            val callback = DiffCallback(field, value)
             field = value
             DiffUtil.calculateDiff(callback).dispatchUpdatesTo(this)
         }
@@ -50,7 +54,17 @@ class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter
                 watchCount.text = model.watchers.toString()
                 starCount.text = model.stars.toString()
                 userName.text = model.owner.name
-                unreadIndicator.visibility = model.isRead.toVisibility(false)
+                readIndicator.visibility = model.isRead.toVisibility(false)
+                readAt.visibility = View.INVISIBLE
+                readImageView.visibility = View.INVISIBLE
+                model.readAt?.let {
+                    readAt.visibility = View.VISIBLE
+                    readImageView.visibility = View.VISIBLE
+                    readAt.text = SimpleDateFormat.getDateTimeInstance(
+                        DateFormat.SHORT,
+                        DateFormat.SHORT, Locale.getDefault()
+                    ).format(it)
+                }
                 Glide.with(this).load(model.owner.avatarUrl).into(avatarView)
                 root.setOnClickListener {
                     callback.onItemClick(model, adapterPosition)
@@ -75,7 +89,7 @@ class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter
         }
     }
 
-    class BrowseDiffCallback(
+    class DiffCallback(
         private val oldList: List<RepositoryModel>,
         private val newList: List<RepositoryModel>
     ) : DiffUtil.Callback() {
@@ -86,7 +100,7 @@ class BrowseAdapter(val callback: Callback) : RecyclerView.Adapter<BrowseAdapter
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem == newItem && oldItem.isRead == newItem.isRead
+            return oldItem == newItem && oldItem.isRead == newItem.isRead && oldItem.readAt == newItem.readAt
         }
 
         override fun getOldListSize(): Int = oldList.size

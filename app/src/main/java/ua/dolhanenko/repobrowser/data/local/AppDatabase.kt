@@ -11,7 +11,7 @@ import ua.dolhanenko.repobrowser.data.local.entity.Repository
 
 @Database(
     entities = [Repository::class, AppUser::class],
-    version = 3
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun repositoriesCacheDao(): RepositoriesCacheDao

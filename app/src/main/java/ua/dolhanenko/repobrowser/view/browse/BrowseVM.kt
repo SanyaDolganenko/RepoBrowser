@@ -16,6 +16,7 @@ import ua.dolhanenko.repobrowser.domain.usecases.SaveClickedRepoUseCase
 import ua.dolhanenko.repobrowser.utils.Constants
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
 import ua.dolhanenko.repobrowser.utils.toUri
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -30,7 +31,7 @@ class BrowseVM(
     var requestViewUrl: (Uri?) -> Unit = {}
     private var lastLoadedPage = AtomicInteger(0)
     private var lastFilter: String? = null
-    private var readItemIds: List<String> = mutableListOf()
+    private var readItems: List<RepositoryModel> = mutableListOf()
 
     init {
         loadCachedRepos()
@@ -38,10 +39,12 @@ class BrowseVM(
 
     fun onRepositoryClick(model: RepositoryModel, position: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            saveClickedRepoUseCase(model)
-            (readItemIds as MutableList).add(model.id)
+            val readDate = Date()
+            saveClickedRepoUseCase(model, readDate)
+            (readItems as MutableList).add(model)
             updateLocalRepositoryModel(position) {
                 it.isRead = true
+                it.readAt = readDate
             }
             runOnUiThread {
                 requestViewUrl(model.url.toUri())
@@ -96,8 +99,8 @@ class BrowseVM(
 
     private fun loadCachedRepos() {
         viewModelScope.launch(Dispatchers.IO) {
-            getCachedReposUseCase()?.map { it.id }?.toMutableList()?.let {
-                readItemIds = it
+            getCachedReposUseCase()?.toMutableList()?.let {
+                readItems = it
             }
         }
     }
@@ -128,6 +131,11 @@ class BrowseVM(
     }
 
     private fun List<RepositoryModel>.markReadItems() {
-        forEach { it.isRead = it.id in readItemIds }
+        forEach { model ->
+            readItems.find { it.id == model.id }?.let {
+                model.isRead = true
+                model.readAt = it.readAt
+            }
+        }
     }
 }
