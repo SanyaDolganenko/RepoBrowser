@@ -1,7 +1,8 @@
-package ua.dolhanenko.repobrowser.data.remote
+package ua.dolhanenko.repobrowser.data.remote.entity
 
 
 data class FilteredReposResponse(val total_count: Long, val items: List<RepoResponse>)
+
 data class RepoResponse(
     val id: String, val name: String, val full_name: String?,
     val description: String?,

@@ -5,6 +5,8 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
+import ua.dolhanenko.repobrowser.data.remote.entity.FilteredReposResponse
+import ua.dolhanenko.repobrowser.data.remote.entity.UserResponse
 
 
 interface GithubApi {
@@ -26,4 +28,8 @@ interface GithubApi {
         @Query("sort") sortBy: String = SortingField.STARS.value,
         @Query("order") order: String = OrderDirection.DESCENDING.value,
     ): Deferred<Response<FilteredReposResponse>>
+
+    @GET("user")
+    @Headers("Content-Type: application/json", "Accept: application/vnd.github.v3+json")
+    fun getUserInfo(): Deferred<Response<UserResponse>>
 }

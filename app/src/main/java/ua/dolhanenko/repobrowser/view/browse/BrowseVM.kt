@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
-import ua.dolhanenko.repobrowser.data.remote.BaseApiRepository
+import ua.dolhanenko.repobrowser.data.remote.BaseApiDataSource
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.domain.usecases.FilterRepositoriesUseCase
@@ -92,7 +92,7 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
     ): FilteredRepositoriesModel? {
         return try {
             filterUseCase.invoke(filter, page, pageSize)
-        } catch (e: BaseApiRepository.NetworkException) {
+        } catch (e: BaseApiDataSource.NetworkException) {
             Log.e("BROWSE_VM", "Encountered status code: ${e.code}")
             e.printStackTrace()
             null

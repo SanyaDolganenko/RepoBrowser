@@ -9,7 +9,20 @@ import retrofit2.Response
 import java.util.concurrent.CancellationException
 
 
-open class BaseApiRepository {
+open class BaseApiDataSource {
+    companion object {
+        const val CODE_UNAUTHORIZED = 401
+    }
+
+    protected suspend fun <A> Deferred<Response<A>>.performRequest(): A? {
+        val response = await()
+        if (response.isSuccessful) {
+            return response.body()
+        } else {
+            throw NetworkException(response.code(), response.errorBody()?.string() ?: "")
+        }
+    }
+
     protected fun <A> safeAsyncRequest(
         deferredResponse: Deferred<Response<A>>,
         callback: (A?, String?) -> Unit
@@ -33,5 +46,5 @@ open class BaseApiRepository {
         }
     }
 
-     class NetworkException(val code: Int, message: String) : Exception(message)
+    class NetworkException(val code: Int, message: String) : Exception(message)
 }

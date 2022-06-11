@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import ua.dolhanenko.repobrowser.application.ModulesManager
 import ua.dolhanenko.repobrowser.domain.usecases.FilterRepositoriesUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.QueryUserInfoUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.SaveActiveUserUseCase
 import ua.dolhanenko.repobrowser.view.browse.BrowseVM
 import ua.dolhanenko.repobrowser.view.login.LoginVM
 
@@ -15,7 +17,8 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(LoginVM::class.java) -> LoginVM(
-                LoginUseCase()
+                LoginUseCase(), QueryUserInfoUseCase(modules.githubDataSource),
+                SaveActiveUserUseCase(modules.usersCacheDataSource)
             )
             modelClass.isAssignableFrom(BrowseVM::class.java) -> BrowseVM(
                 FilterRepositoriesUseCase(modules.githubDataSource)

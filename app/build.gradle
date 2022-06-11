@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
+    id 'kotlin-kapt'
     id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
 }
@@ -54,6 +55,14 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:2.5.0"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
     implementation 'com.github.bumptech.glide:glide:4.12.0'
+
+    //data
+    def room_version = "2.3.0"
+    def room_compiler_version = "2.2.6"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_compiler_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

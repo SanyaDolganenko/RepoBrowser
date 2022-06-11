@@ -1,6 +1,7 @@
 package ua.dolhanenko.repobrowser.view.login
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,10 +10,17 @@ import com.google.firebase.auth.OAuthCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.application.RepoApp
+import ua.dolhanenko.repobrowser.data.remote.BaseApiDataSource
 import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.QueryUserInfoUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.SaveActiveUserUseCase
 
 
-class LoginVM(private val loginUseCase: LoginUseCase) : ViewModel() {
+class LoginVM(
+    private val loginUseCase: LoginUseCase,
+    private val queryUserInfoUseCase: QueryUserInfoUseCase,
+    private val saveActiveUserUseCase: SaveActiveUserUseCase
+) : ViewModel() {
     val isLoggingIn: MutableLiveData<Boolean> = MutableLiveData(false)
     val result: MutableLiveData<Boolean?> = MutableLiveData()
 
@@ -33,10 +41,28 @@ class LoginVM(private val loginUseCase: LoginUseCase) : ViewModel() {
         isLoggingIn.postValue(false)
     }
 
-    private fun onLoginSuccess(authResult: AuthResult) {
+    private suspend fun onLoginSuccess(authResult: AuthResult) {
         RepoApp.activeToken = (authResult.credential as OAuthCredential).accessToken
-        result.postValue(RepoApp.activeToken != null)
         isLoggingIn.postValue(false)
+        queryLoggedInUserInfo()
+    }
+
+    private suspend fun queryLoggedInUserInfo() {
+        isLoggingIn.postValue(true)
+        var isSuccess = false
+        try {
+            queryUserInfoUseCase()?.let {
+                saveActiveUserUseCase(it)
+                isSuccess = true
+            }
+        } catch (e: BaseApiDataSource.NetworkException) {
+            if (e.code == BaseApiDataSource.CODE_UNAUTHORIZED) {
+                //User token expired
+                Log.i("LOGIN_VM", "user token expired or bad credentials")
+            }
+        }
+        isLoggingIn.postValue(false)
+        result.postValue(isSuccess)
     }
 
     private fun onLoginFail() {
