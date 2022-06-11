@@ -4,15 +4,14 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
-import ua.dolhanenko.repobrowser.data.remote.BaseApiDataSource
-import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.usecases.FilterRepositoriesUseCase
 import ua.dolhanenko.repobrowser.utils.Constants
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 
 class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel() {
@@ -23,79 +22,59 @@ class BrowseVM(private val filterUseCase: FilterRepositoriesUseCase) : ViewModel
     private var lastFilter: String? = null
 
     fun onPageEndReached() {
-        Log.d("BrowseVM", "Page end reached, loading more...")
-        loadNextFilteredPagesAsync(lastFilter) {
-            it?.let {
-                val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
-                current.addAll(it)
-                filteredRepositories.postValue(current)
-            }
+        if (lastFilter.isNullOrEmpty()) {
+            filteredRepositories.postValue(listOf())
+            return
         }
-
+        Log.d("BROWSE_VM", "Page end reached, loading more...")
+        val lastLoaded = lastLoadedPage.get() + 1
+        val ids =
+            (lastLoaded until lastLoaded + Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
+        startLoadingPages(lastFilter!!, ids)
     }
 
     fun onFilterInput(filter: String?) {
         lastFilter = filter
         lastLoadedPage.set(0)
-        isDataLoading.postValue(true)
-        loadNextFilteredPagesAsync(filter) {
-            filteredRepositories.postValue(it)
-            isDataLoading.postValue(false)
-        }
-    }
-
-    private fun loadNextFilteredPagesAsync(
-        filter: String?,
-        onLoaded: (List<RepositoryModel>?) -> Unit
-    ) {
-        filteredFound.postValue(null)
         if (filter.isNullOrEmpty()) {
             filteredRepositories.postValue(listOf())
             return
         }
+        isDataLoading.postValue(true)
+        val ids = (1..Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
+        startLoadingPages(filter, ids)
+    }
+
+    private fun startLoadingPages(filter: String, pageNumbers: IntArray) {
         viewModelScope.launch(Dispatchers.IO) {
-            val results = mutableListOf<Deferred<FilteredRepositoriesModel?>>()
-            for (i in 1..Constants.PAGES_PER_ASYNC_LOAD) {
-                val pageToLoad = lastLoadedPage.get() + i
-                Log.d(
-                    "BrowseVM",
-                    "Preparing to load page #$pageToLoad"
-                )
-                results.add(async {
-                    suspendCoroutine {
-                        launch {
-                            it.resume(loadFilteredPage(pageToLoad, Constants.PAGE_SIZE, filter))
+            filterUseCase.invoke(filter, pageNumbers).collect {
+                isDataLoading.postValue(false)
+                lastLoadedPage.getAndIncrement()
+                when (it) {
+                    is Resource.Success -> {
+                        it.data?.let {
+                            appendRepositoriesForDisplay(it.pageNumber, it.items)
+                            filteredFound.postValue(it.foundInTotal)
                         }
                     }
-                })
+                    is Resource.Error -> {
+                        Log.e("BROWSE_VM", "Encountered status code: ${it.exception.message}")
+                        it.exception.printStackTrace()
+                    }
+                }
             }
-            val loadedPages = results.awaitAll()
-            if (loadedPages.filterNotNull().isNotEmpty()) {
-                filteredFound.postValue(loadedPages.first()?.foundInTotal)
-            }
-            val combinedNewPages = loadedPages
-                .sortedBy { it?.pageNumber }
-                .flatMap { it?.items ?: listOf() }
-            lastLoadedPage.set(lastLoadedPage.get() + loadedPages.filterNotNull().size)
-            Log.d(
-                "BrowseVM",
-                "Loaded new combined pages with total size: ${combinedNewPages.size}"
-            )
-            onLoaded(combinedNewPages)
         }
     }
 
-    private suspend fun loadFilteredPage(
-        page: Int,
-        pageSize: Int,
-        filter: String
-    ): FilteredRepositoriesModel? {
-        return try {
-            filterUseCase.invoke(filter, page, pageSize)
-        } catch (e: BaseApiDataSource.NetworkException) {
-            Log.e("BROWSE_VM", "Encountered status code: ${e.code}")
-            e.printStackTrace()
-            null
+    private fun appendRepositoriesForDisplay(number: Int, page: List<RepositoryModel>) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
+            Log.d(
+                "BROWSE_VM",
+                "Current size: ${current.size}. Appending page #$number ${page.size}"
+            )
+            current.addAll(page)
+            filteredRepositories.value = current
         }
     }
 }

@@ -8,6 +8,7 @@ import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.dolhanenko.repobrowser.application.RepoApp
+import ua.dolhanenko.repobrowser.data.remote.api.GithubApi
 import java.util.concurrent.TimeUnit
 
 

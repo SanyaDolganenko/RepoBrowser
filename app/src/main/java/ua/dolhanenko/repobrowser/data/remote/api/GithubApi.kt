@@ -1,4 +1,4 @@
-package ua.dolhanenko.repobrowser.data.remote
+package ua.dolhanenko.repobrowser.data.remote.api
 
 import kotlinx.coroutines.Deferred
 import retrofit2.Response

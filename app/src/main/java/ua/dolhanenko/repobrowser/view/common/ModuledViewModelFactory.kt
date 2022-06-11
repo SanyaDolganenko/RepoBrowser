@@ -9,8 +9,8 @@ import ua.dolhanenko.repobrowser.view.login.LoginVM
 
 
 class ModuledViewModelFactory(private val modules: ModulesManager) :
-
     ViewModelProvider.NewInstanceFactory() {
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(LoginVM::class.java) -> LoginVM(
@@ -19,7 +19,7 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
                 GetActiveUserUseCase(modules.usersCacheDataSource)
             )
             modelClass.isAssignableFrom(BrowseVM::class.java) -> BrowseVM(
-                FilterRepositoriesUseCase(modules.githubDataSource)
+                FilterRepositoriesUseCase(modules.githubRepository)
             )
             else -> super.create(modelClass)
         } as T
