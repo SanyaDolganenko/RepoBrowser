@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.data.remote.BaseApiDataSource
+import ua.dolhanenko.repobrowser.domain.usecases.GetActiveUserUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.QueryUserInfoUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.SaveActiveUserUseCase
@@ -19,10 +20,15 @@ import ua.dolhanenko.repobrowser.domain.usecases.SaveActiveUserUseCase
 class LoginVM(
     private val loginUseCase: LoginUseCase,
     private val queryUserInfoUseCase: QueryUserInfoUseCase,
-    private val saveActiveUserUseCase: SaveActiveUserUseCase
+    private val saveActiveUserUseCase: SaveActiveUserUseCase,
+    private val getActiveUserUseCase: GetActiveUserUseCase
 ) : ViewModel() {
     val isLoggingIn: MutableLiveData<Boolean> = MutableLiveData(false)
     val result: MutableLiveData<Boolean?> = MutableLiveData()
+
+    init {
+        attemptLoginWthLastActiveUser()
+    }
 
     fun onLoginClick(activity: Activity, userName: String) {
         isLoggingIn.postValue(true)
@@ -36,6 +42,16 @@ class LoginVM(
         }
     }
 
+    //Attempt to fetch an active user from DB and use their token to fetch user data
+    private fun attemptLoginWthLastActiveUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val activeUser = getActiveUserUseCase()
+            activeUser?.lastUsedToken?.let {
+                RepoApp.activeToken = it
+                queryLoggedInUserInfo()
+            }
+        }
+    }
 
     private fun onLoginCancel() {
         isLoggingIn.postValue(false)
@@ -51,10 +67,11 @@ class LoginVM(
         isLoggingIn.postValue(true)
         var isSuccess = false
         try {
-            queryUserInfoUseCase()?.let {
-                saveActiveUserUseCase(it)
-                isSuccess = true
-            }
+            if (RepoApp.activeToken != null)
+                queryUserInfoUseCase(RepoApp.activeToken!!)?.let {
+                    saveActiveUserUseCase(it)
+                    isSuccess = true
+                }
         } catch (e: BaseApiDataSource.NetworkException) {
             if (e.code == BaseApiDataSource.CODE_UNAUTHORIZED) {
                 //User token expired

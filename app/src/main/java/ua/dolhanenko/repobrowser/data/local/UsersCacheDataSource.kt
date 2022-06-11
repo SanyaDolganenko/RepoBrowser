@@ -6,7 +6,7 @@ import ua.dolhanenko.repobrowser.domain.interfaces.IUsersCacheDataSource
 
 
 class UsersCacheDataSource(private val dao: UsersCacheDao) : IUsersCacheDataSource {
-    override fun getActiveUser(): AppUser {
+    override fun getActiveUser(): AppUser? {
         return dao.getActiveUser()
     }
 
@@ -14,7 +14,7 @@ class UsersCacheDataSource(private val dao: UsersCacheDao) : IUsersCacheDataSour
         dao.save(user)
         dao.setOtherUsersAsInactive(user.id)
     }
-    
+
     override fun deleteUser(user: AppUser) {
         dao.delete(user)
     }

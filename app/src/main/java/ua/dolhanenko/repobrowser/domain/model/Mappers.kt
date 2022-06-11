@@ -24,6 +24,9 @@ fun FilteredReposResponse.toModel(pageNumber: Int): FilteredRepositoriesModel {
 
 fun Owner.toModel(): OwnerModel = OwnerModel(login, avatar_url)
 
-fun UserResponse.toModel(): UserModel = UserModel(id, login)
+fun UserResponse.toModel(userToken: String): UserModel = UserModel(id, login, userToken)
 
-fun UserModel.toDbEntity(isActive: Boolean): AppUser = AppUser(id, userName, isActive)
+fun UserModel.toDbEntity(isActive: Boolean): AppUser =
+    AppUser(id, userName, isActive, lastUsedToken)
+
+fun AppUser.toModel(): UserModel = UserModel(id, userName, lastUsedToken)

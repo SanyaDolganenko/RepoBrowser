@@ -3,10 +3,7 @@ package ua.dolhanenko.repobrowser.view.common
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ua.dolhanenko.repobrowser.application.ModulesManager
-import ua.dolhanenko.repobrowser.domain.usecases.FilterRepositoriesUseCase
-import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase
-import ua.dolhanenko.repobrowser.domain.usecases.QueryUserInfoUseCase
-import ua.dolhanenko.repobrowser.domain.usecases.SaveActiveUserUseCase
+import ua.dolhanenko.repobrowser.domain.usecases.*
 import ua.dolhanenko.repobrowser.view.browse.BrowseVM
 import ua.dolhanenko.repobrowser.view.login.LoginVM
 
@@ -18,7 +15,8 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
         return when {
             modelClass.isAssignableFrom(LoginVM::class.java) -> LoginVM(
                 LoginUseCase(), QueryUserInfoUseCase(modules.githubDataSource),
-                SaveActiveUserUseCase(modules.usersCacheDataSource)
+                SaveActiveUserUseCase(modules.usersCacheDataSource),
+                GetActiveUserUseCase(modules.usersCacheDataSource)
             )
             modelClass.isAssignableFrom(BrowseVM::class.java) -> BrowseVM(
                 FilterRepositoriesUseCase(modules.githubDataSource)

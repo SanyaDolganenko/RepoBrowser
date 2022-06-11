@@ -4,7 +4,7 @@ import ua.dolhanenko.repobrowser.data.local.entity.AppUser
 
 
 interface IUsersCacheDataSource {
-    fun getActiveUser(): AppUser
+    fun getActiveUser(): AppUser?
 
     fun saveActiveUser(user: AppUser)
 

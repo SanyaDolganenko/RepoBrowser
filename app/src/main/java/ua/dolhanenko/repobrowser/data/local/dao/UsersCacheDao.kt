@@ -6,7 +6,7 @@ import ua.dolhanenko.repobrowser.data.local.entity.AppUser
 @Dao
 interface UsersCacheDao {
     @Query("SELECT * FROM appuser WHERE isActive = 1")
-    fun getActiveUser(): AppUser
+    fun getActiveUser(): AppUser?
 
     @Query("UPDATE appuser SET isActive=1 WHERE id LIKE :activeUserId")
     fun setUserAsActive(activeUserId: Long)
