@@ -26,7 +26,7 @@ import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
 
 class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
     private val viewModel: BrowseVM by viewModels { RepoApp.vmFactory }
-    private val adapter: RepositoriesAdapter = RepositoriesAdapter(this)
+    private val adapter: RepositoriesAdapter = RepositoriesAdapter(true, this)
     private val inputHandler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

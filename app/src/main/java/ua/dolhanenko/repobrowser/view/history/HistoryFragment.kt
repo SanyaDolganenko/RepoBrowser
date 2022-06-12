@@ -17,7 +17,7 @@ import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
 
 class HistoryFragment : Fragment(), RepositoriesAdapter.Callback {
     private val viewModel: HistoryVM by viewModels { RepoApp.vmFactory }
-    private val adapter: RepositoriesAdapter = RepositoriesAdapter(this)
+    private val adapter: RepositoriesAdapter = RepositoriesAdapter(false, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

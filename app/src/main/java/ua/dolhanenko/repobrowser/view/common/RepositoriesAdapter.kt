@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class RepositoriesAdapter(val callback: Callback) :
+class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
     RecyclerView.Adapter<RepositoriesAdapter.ViewHolder>() {
     var dataList: List<RepositoryModel> = listOf()
         set(value) {
@@ -47,7 +47,10 @@ class RepositoriesAdapter(val callback: Callback) :
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(model: RepositoryModel) {
             itemView.apply {
-                indexTextView.text = (adapterPosition + 1).toString()
+                indexTextView.visibility = showPositions.toVisibility(true)
+                if (showPositions) {
+                    indexTextView.text = (adapterPosition + 1).toString()
+                }
                 insertHighlightedTitle(model.title, currentFilter)
                 repoDescription.text = model.description
                 language.text = model.language ?: ""

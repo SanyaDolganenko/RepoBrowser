@@ -12,6 +12,7 @@
         android:theme="@style/Theme.RepoBrowser">
         <activity
             android:name=".view.host.HostActivity"
+            android:configChanges="orientation"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
