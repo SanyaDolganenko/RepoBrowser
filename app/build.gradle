@@ -20,10 +20,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        debug {
+            storeFile file("RepoBrowser.jks")
+            storePassword "12345678"
+            keyAlias "master"
+            keyPassword "12345678"
+        }
+    }
+
     buildTypes {
         def baseUrlField = 'API_BASE_URL'
         all {
             buildConfigField "String", "${baseUrlField}", "\"https://api.github.com/\""
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled false

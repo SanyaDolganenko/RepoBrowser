@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "970048404113-dhkgi4mgajqkmebm2eloubetu7pb3j8p.apps.googleusercontent.com",
+          "client_id": "970048404113-avhf4qnsu92esv822c6qc8kaluhi5sim.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ua.dolhanenko.repobrowser",
-            "certificate_hash": "d8699f58ade6de905e77a13836e218ab4df2545e"
+            "certificate_hash": "4444b8cbd425d0ced1e8a33a2bb00d208b863dc8"
           }
         },
         {
