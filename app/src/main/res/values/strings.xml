@@ -6,4 +6,5 @@
     <string name="tab_browse">Browse</string>
     <string name="tab_history">History</string>
     <string name="button_logout">LOGOUT</string>
+    <string name="title_greeting">Welcome</string>
 </resources>

@@ -69,7 +69,7 @@ class BrowseVM(
         val lastLoaded = lastLoadedPage.get() + 1
         val ids =
             (lastLoaded until lastLoaded + Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
-        startLoadingPages(lastFilter!!, ids)
+        startLoadingPages(lastFilter!!, ids, false)
     }
 
     fun onFilterInput(filter: String?) {
@@ -81,10 +81,14 @@ class BrowseVM(
         }
         isDataLoading.postValue(true)
         val ids = (1..Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
-        startLoadingPages(filter, ids)
+        startLoadingPages(filter, ids, true)
     }
 
-    private fun startLoadingPages(filter: String, pageNumbers: IntArray) {
+    private fun startLoadingPages(
+        filter: String,
+        pageNumbers: IntArray,
+        startListFromScratch: Boolean
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             filterUseCase.invoke(filter, pageNumbers).collect {
                 isDataLoading.postValue(false)
@@ -92,7 +96,11 @@ class BrowseVM(
                 when (it) {
                     is Resource.Success -> {
                         it.data?.let {
-                            appendRepositoriesForDisplay(it.pageNumber, it.items)
+                            if (it.pageNumber > pageNumbers.first() || startListFromScratch.not()) {
+                                appendRepositoriesForDisplay(it.pageNumber, it.items)
+                            } else if (it.pageNumber == pageNumbers.first()) {
+                                postRepositoriesForDisplay(it.pageNumber, it.items)
+                            }
                             filteredFound.postValue(it.foundInTotal)
                         }
                     }
@@ -124,6 +132,15 @@ class BrowseVM(
             current.addAll(page)
             filteredRepositories.value = current
         }
+    }
+
+    private fun postRepositoriesForDisplay(number: Int, page: List<RepositoryModel>) {
+        Log.d(
+            "BROWSE_VM",
+            "Rewriting repositories with page #$number ${page.size}"
+        )
+        page.markReadItems()
+        filteredRepositories.postValue(page)
     }
 
     private fun updateLocalRepositoryModel(position: Int, block: (RepositoryModel) -> Unit) {

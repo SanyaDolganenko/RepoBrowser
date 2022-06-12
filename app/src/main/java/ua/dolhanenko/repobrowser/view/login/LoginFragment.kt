@@ -43,8 +43,7 @@ class LoginFragment : Fragment() {
 
     private fun initViews(root: View) {
         root.buttonLogin.setOnClickListener {
-            val login = loginInputEditText.text?.toString() ?: ""
-            viewModel.onLoginClick(requireActivity(), login)
+            viewModel.onLoginClick(requireActivity(), "")
         }
     }
 
