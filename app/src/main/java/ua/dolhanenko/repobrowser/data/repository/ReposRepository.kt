@@ -1,29 +1,36 @@
-package ua.dolhanenko.repobrowser.data.remote.repository
+package ua.dolhanenko.repobrowser.data.repository
 
 import android.util.Log
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import ua.dolhanenko.repobrowser.domain.interfaces.IGithubDataSource
-import ua.dolhanenko.repobrowser.domain.interfaces.IGithubRepository
+import ua.dolhanenko.repobrowser.data.local.toDbEntity
+import ua.dolhanenko.repobrowser.data.local.toModel
+import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
+import ua.dolhanenko.repobrowser.data.repository.interfaces.IReposCacheDataSource
+import ua.dolhanenko.repobrowser.domain.interfaces.IReposRepository
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
+import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
 import java.util.concurrent.atomic.AtomicInteger
 
 typealias UnpublishedPage = Pair<Int, Resource<FilteredRepositoriesModel?>>
 
-class GithubRepository(private val pageSize: Int, private val datasource: IGithubDataSource) :
-    IGithubRepository {
+class ReposRepository(
+    private val pageSize: Int,
+    private val githubDataSource: IGithubDataSource,
+    private val reposCacheDataSource: IReposCacheDataSource
+) : IReposRepository {
     private companion object {
-        const val LOG_TAG = "GITHUB_REPO"
+        const val LOG_TAG = "REPOS_REPO"
     }
 
     private val loadedPages: AtomicInteger = AtomicInteger(0)
     private var pageNumOffset: Int = 0
     private val unpublishedPages: List<UnpublishedPage> = mutableListOf()
 
-    override fun getPagesAsync(
+    override fun getFreshFilteredPagesAsync(
         filter: String,
         pageNumbers: IntArray
     ): Flow<Resource<FilteredRepositoriesModel?>> = channelFlow {
@@ -32,14 +39,17 @@ class GithubRepository(private val pageSize: Int, private val datasource: IGithu
         pageNumbers.forEach { pageNumber ->
             launch {
                 Log.d(LOG_TAG, "Fetching page #$pageNumber")
-                val pageResource = datasource.browseRepositories(pageSize, pageNumber, filter)
+                val pageResource = githubDataSource.browseRepositories(pageSize, pageNumber, filter)
                 val currentlyLoaded = loadedPages.incrementAndGet()
                 Log.d(LOG_TAG, "Currently loaded: $currentlyLoaded")
                 if (pageNumber - (currentlyLoaded + pageNumOffset) <= 0) {
                     Log.d(LOG_TAG, "Emitting page #$pageNumber")
                     offer(pageResource)
                 } else {
-                    Log.d(LOG_TAG, "Saving unpublished page #$pageNumber for later")
+                    Log.d(
+                        LOG_TAG,
+                        "Saving unpublished page #$pageNumber for later"
+                    )
                     pageResource.addToUnpublishedSafe(pageNumber)
                 }
                 processUnpublishedPages()
@@ -74,5 +84,17 @@ class GithubRepository(private val pageSize: Int, private val datasource: IGithu
                 break
             }
         }
+    }
+
+    override fun getReadItems(byUserId: Long): List<RepositoryModel> {
+        return reposCacheDataSource.getItems(byUserId).map { it.toModel() }
+    }
+
+    override fun insertRead(repository: RepositoryModel, forUserId: Long, viewedAt: Long) {
+        reposCacheDataSource.insert(repository.toDbEntity(forUserId, viewedAt))
+    }
+
+    override fun deleteRead(repository: RepositoryModel) {
+        reposCacheDataSource.delete(repository.toDbEntity(0))
     }
 }

@@ -16,29 +16,20 @@ class ModuledViewModelFactory(private val modules: ModulesManager) :
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(HostVM::class.java) -> HostVM(
-                LogoutUseCase(modules.usersCacheDataSource)
+                LogoutUseCase(modules.usersRepository)
             )
             modelClass.isAssignableFrom(LoginVM::class.java) -> LoginVM(
-                LoginUseCase(), QueryUserInfoUseCase(modules.githubDataSource),
-                SaveActiveUserUseCase(modules.usersCacheDataSource),
-                GetActiveUserUseCase(modules.usersCacheDataSource)
+                LoginUseCase(), QueryUserInfoUseCase(modules.usersRepository),
+                SaveActiveUserUseCase(modules.usersRepository),
+                GetActiveUserUseCase(modules.usersRepository)
             )
             modelClass.isAssignableFrom(BrowseVM::class.java) -> BrowseVM(
-                FilterReposUseCase(modules.githubRepository),
-                SaveClickedRepoUseCase(
-                    modules.repositoriesCacheDataSource,
-                    modules.usersCacheDataSource
-                ),
-                GetCachedReposUseCase(
-                    modules.repositoriesCacheDataSource,
-                    modules.usersCacheDataSource
-                )
+                FilterReposUseCase(modules.reposRepository),
+                SaveClickedRepoUseCase(modules.reposRepository, modules.usersRepository),
+                GetCachedReposUseCase(modules.reposRepository, modules.usersRepository)
             )
             modelClass.isAssignableFrom(HistoryVM::class.java) -> HistoryVM(
-                GetCachedReposUseCase(
-                    modules.repositoriesCacheDataSource,
-                    modules.usersCacheDataSource
-                )
+                GetCachedReposUseCase(modules.reposRepository, modules.usersRepository)
             )
             else -> super.create(modelClass)
         } as T

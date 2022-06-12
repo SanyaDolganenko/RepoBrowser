@@ -1,11 +1,11 @@
 package ua.dolhanenko.repobrowser.data.remote.datasource
 
 import ua.dolhanenko.repobrowser.data.remote.api.GithubApi
-import ua.dolhanenko.repobrowser.domain.interfaces.IGithubDataSource
+import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.model.UserModel
-import ua.dolhanenko.repobrowser.domain.model.toModel
+import ua.dolhanenko.repobrowser.data.remote.toModel
 
 
 class GithubDataSource(private val api: GithubApi) : BaseApiDataSource(), IGithubDataSource {

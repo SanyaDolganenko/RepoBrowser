@@ -64,12 +64,13 @@ class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
 
     private fun createPaginationAwareLayoutManager(): RecyclerView.LayoutManager {
         return object : LinearLayoutManager(requireContext()) {
+            private fun isLastItemVisible(): Boolean =
+                findLastCompletelyVisibleItemPosition() == this@BrowseFragment.adapter.dataList.lastIndex
+
             override fun onScrollStateChanged(state: Int) {
                 super.onScrollStateChanged(state)
                 if (state == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (findLastCompletelyVisibleItemPosition() ==
-                        this@BrowseFragment.adapter.dataList.lastIndex
-                    ) {
+                    if (isLastItemVisible()) {
                         Log.d("BROWSE_FR", "Reached end of list. Notifying VM.")
                         viewModel.onPageEndReached()
                     }

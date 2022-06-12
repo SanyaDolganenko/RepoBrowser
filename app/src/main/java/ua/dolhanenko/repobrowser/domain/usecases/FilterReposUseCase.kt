@@ -1,16 +1,16 @@
 package ua.dolhanenko.repobrowser.domain.usecases
 
 import kotlinx.coroutines.flow.Flow
-import ua.dolhanenko.repobrowser.domain.interfaces.IGithubRepository
+import ua.dolhanenko.repobrowser.domain.interfaces.IReposRepository
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
 
 
-class FilterReposUseCase(private val githubRepository: IGithubRepository) {
+class FilterReposUseCase(private val reposRepository: IReposRepository) {
     operator fun invoke(
         filter: String,
         pageNumbers: IntArray
     ): Flow<Resource<FilteredRepositoriesModel?>> {
-        return githubRepository.getPagesAsync(filter, pageNumbers)
+        return reposRepository.getFreshFilteredPagesAsync(filter, pageNumbers)
     }
 }

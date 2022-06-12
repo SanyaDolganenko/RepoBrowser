@@ -1,4 +1,4 @@
-package ua.dolhanenko.repobrowser.domain.interfaces
+package ua.dolhanenko.repobrowser.data.repository.interfaces
 
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
