@@ -15,6 +15,10 @@ typealias UnpublishedPage = Pair<Int, Resource<FilteredRepositoriesModel?>>
 
 class GithubRepository(private val pageSize: Int, private val datasource: IGithubDataSource) :
     IGithubRepository {
+    private companion object {
+        const val LOG_TAG = "GITHUB_REPO"
+    }
+
     private val loadedPages: AtomicInteger = AtomicInteger(0)
     private var pageNumOffset: Int = 0
     private val unpublishedPages: List<UnpublishedPage> = mutableListOf()
@@ -27,20 +31,20 @@ class GithubRepository(private val pageSize: Int, private val datasource: IGithu
         loadedPages.set(0)
         pageNumbers.forEach { pageNumber ->
             launch {
-                Log.d("GITHUB_REPO", "Fetching page #$pageNumber")
+                Log.d(LOG_TAG, "Fetching page #$pageNumber")
                 val pageResource = datasource.browseRepositories(pageSize, pageNumber, filter)
                 val currentlyLoaded = loadedPages.incrementAndGet()
-                Log.d("GITHUB_REPO", "Currently loaded: $currentlyLoaded")
+                Log.d(LOG_TAG, "Currently loaded: $currentlyLoaded")
                 if (pageNumber - (currentlyLoaded + pageNumOffset) <= 0) {
-                    Log.d("GITHUB_REPO", "Emitting page #$pageNumber")
+                    Log.d(LOG_TAG, "Emitting page #$pageNumber")
                     offer(pageResource)
                 } else {
-                    Log.d("GITHUB_REPO", "Saving unpublished page #$pageNumber for later")
+                    Log.d(LOG_TAG, "Saving unpublished page #$pageNumber for later")
                     pageResource.addToUnpublishedSafe(pageNumber)
                 }
                 processUnpublishedPages()
                 if (loadedPages.get() == pageNumbers.size) {
-                    Log.d("GITHUB_REPO", "All done. Closing channel")
+                    Log.d(LOG_TAG, "All done. Closing channel")
                     (unpublishedPages as MutableList).clear()
                     close()
                 }
@@ -63,7 +67,7 @@ class GithubRepository(private val pageSize: Int, private val datasource: IGithu
             val current = iterator.next()
             val currentlyLoaded = loadedPages.get()
             if (current.first - (currentlyLoaded + pageNumOffset) <= 0) {
-                Log.d("GITHUB_REPO", "Emitting unpublished page #${current.first}")
+                Log.d(LOG_TAG, "Emitting unpublished page #${current.first}")
                 offer(current.second)
                 iterator.remove()
             } else {

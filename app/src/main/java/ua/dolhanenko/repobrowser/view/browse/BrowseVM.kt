@@ -51,7 +51,6 @@ class BrowseVM(
             saveClickedRepoUseCase(model, readDate)
             (readItems as MutableList).add(model)
             updateLocalRepositoryModel(position) {
-                it.isRead = true
                 it.readAt = readDate
             }
             runOnUiThread {
@@ -158,7 +157,6 @@ class BrowseVM(
     private fun List<RepositoryModel>.markReadItems() {
         forEach { model ->
             readItems.find { it.id == model.id }?.let {
-                model.isRead = true
                 model.readAt = it.readAt
             }
         }

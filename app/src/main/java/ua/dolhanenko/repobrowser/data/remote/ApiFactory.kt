@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ua.dolhanenko.repobrowser.BuildConfig
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.data.remote.api.GithubApi
 import java.util.concurrent.TimeUnit
@@ -36,7 +37,7 @@ class ApiFactory {
 
     private fun retrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
         .client(client)
-        .baseUrl("https://api.github.com/")
+        .baseUrl(BuildConfig.API_BASE_URL)
         .addConverterFactory(
             GsonConverterFactory.create(GsonBuilder().create())
         )

@@ -8,7 +8,6 @@ data class RepositoryModel(
     val stars: Long, val watchers: Long, val language: String?,
     val url: String, val owner: OwnerModel
 ) {
-    var isRead: Boolean = false
     var readAt: Date? = null
 }
 

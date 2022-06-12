@@ -21,6 +21,10 @@ android {
     }
 
     buildTypes {
+        def baseUrlField = 'API_BASE_URL'
+        all {
+            buildConfigField "String", "${baseUrlField}", "\"https://api.github.com/\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

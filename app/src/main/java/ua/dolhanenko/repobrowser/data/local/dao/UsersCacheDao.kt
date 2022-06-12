@@ -19,5 +19,4 @@ interface UsersCacheDao {
 
     @Delete
     fun delete(user: AppUser)
-
 }

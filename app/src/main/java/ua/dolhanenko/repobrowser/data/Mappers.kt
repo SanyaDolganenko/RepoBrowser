@@ -46,7 +46,6 @@ fun Repository.toModel(): RepositoryModel {
         language, url, OwnerModel(ownerName, ownerLogoUrl)
     ).also { model ->
         this.readAt?.let {
-            model.isRead = true
             model.readAt = Date(it)
         }
     }

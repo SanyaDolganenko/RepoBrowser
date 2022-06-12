@@ -57,10 +57,11 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
                 watchCount.text = model.watchers.toString()
                 starCount.text = model.stars.toString()
                 userName.text = model.owner.name
-                readIndicator.visibility = model.isRead.toVisibility(false)
                 readAt.visibility = View.INVISIBLE
                 readImageView.visibility = View.INVISIBLE
+                readIndicator.visibility = View.INVISIBLE
                 model.readAt?.let {
+                    readIndicator.visibility = View.VISIBLE
                     readAt.visibility = View.VISIBLE
                     readImageView.visibility = View.VISIBLE
                     readAt.text = SimpleDateFormat.getDateTimeInstance(
@@ -103,7 +104,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem == newItem && oldItem.isRead == newItem.isRead && oldItem.readAt == newItem.readAt
+            return oldItem == newItem && oldItem.readAt == newItem.readAt
         }
 
         override fun getOldListSize(): Int = oldList.size

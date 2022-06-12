@@ -43,7 +43,7 @@ class LoginVM(
         }
     }
 
-    //Attempt to fetch an active user from DB and use their token to fetch user data
+    //Attempt to skip login by fetching an active user from DB and use their token to fetch user data
     private fun attemptLoginWthLastActiveUser() {
         viewModelScope.launch(Dispatchers.IO) {
             val activeUser = getActiveUserUseCase()
