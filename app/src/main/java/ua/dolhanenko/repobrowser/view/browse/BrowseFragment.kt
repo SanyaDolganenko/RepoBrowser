@@ -83,22 +83,22 @@ class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
     }
 
     private fun subscribeForData() {
-        viewModel.requestViewUrl = {
+        viewModel.getViewUrlEvent().observe(this) {
             it?.openInDefaultBrowser(requireContext())
         }
-        viewModel.filteredRepositories.observe(this) {
+        viewModel.getFilteredRepositories().observe(this) {
             it?.let {
                 runOnUiThread {
                     adapter.dataList = it
                 }
             }
         }
-        viewModel.isDataLoading.observe(this) {
+        viewModel.getIsDataLoading().observe(this) {
             runOnUiThread {
                 progressPar.visibility = it.toVisibility()
             }
         }
-        viewModel.filteredFound.observe(this) {
+        viewModel.getFilteredFound().observe(this) {
             runOnUiThread {
                 countTextView.text = it?.toString()
             }

@@ -1,5 +1,6 @@
 package ua.dolhanenko.repobrowser.view.host
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +12,11 @@ import ua.dolhanenko.repobrowser.utils.runOnUiThread
 
 
 class HostVM(private val logoutUseCase: LogoutUseCase) : ViewModel() {
-    val isLogoutVisible: MutableLiveData<Boolean> = MutableLiveData(false)
-    val successfulLogout: SingleLiveEvent<Void> = SingleLiveEvent()
+    private val isLogoutVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val successfulLogoutEvent: SingleLiveEvent<Void> = SingleLiveEvent()
+
+    fun getIsLogoutVisible(): LiveData<Boolean> = isLogoutVisible
+    fun getSuccessfulLogoutEvent(): LiveData<Void> = successfulLogoutEvent
 
     fun onSuccessfulLogin() {
         isLogoutVisible.postValue(true)
@@ -22,7 +26,7 @@ class HostVM(private val logoutUseCase: LogoutUseCase) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             if (logoutUseCase()) {
                 runOnUiThread {
-                    successfulLogout.call()
+                    successfulLogoutEvent.call()
                     isLogoutVisible.value = false
                 }
             }

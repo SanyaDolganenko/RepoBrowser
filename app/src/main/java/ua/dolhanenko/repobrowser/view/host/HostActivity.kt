@@ -1,7 +1,6 @@
 package ua.dolhanenko.repobrowser.view.host
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -35,11 +34,10 @@ class HostActivity : AppCompatActivity(), LoginFragment.Callback {
     }
 
     private fun subscribeData() {
-        viewModel.isLogoutVisible.observe(this) {
+        viewModel.getIsLogoutVisible().observe(this) {
             menu?.changeLogoutVisibility(it)
         }
-        viewModel.successfulLogout.observe(this) {
-            Log.d("HOST", "Responding to successful logout")
+        viewModel.getSuccessfulLogoutEvent().observe(this) {
             LoginFragment().show()
         }
     }
@@ -49,7 +47,7 @@ class HostActivity : AppCompatActivity(), LoginFragment.Callback {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.changeLogoutVisibility(viewModel.isLogoutVisible.value ?: false)
+        menu?.changeLogoutVisibility(viewModel.getIsLogoutVisible().value ?: false)
         return super.onPrepareOptionsMenu(menu)
     }
 

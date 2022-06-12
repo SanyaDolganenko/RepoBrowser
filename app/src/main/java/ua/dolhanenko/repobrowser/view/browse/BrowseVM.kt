@@ -2,6 +2,7 @@ package ua.dolhanenko.repobrowser.view.browse
 
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import ua.dolhanenko.repobrowser.domain.usecases.FilterReposUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.GetCachedReposUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.SaveClickedRepoUseCase
 import ua.dolhanenko.repobrowser.utils.Constants
+import ua.dolhanenko.repobrowser.utils.SingleLiveEvent
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
 import ua.dolhanenko.repobrowser.utils.toUri
 import java.util.*
@@ -25,10 +27,11 @@ class BrowseVM(
     private val saveClickedRepoUseCase: SaveClickedRepoUseCase,
     private val getCachedReposUseCase: GetCachedReposUseCase
 ) : ViewModel() {
-    val filteredRepositories: MutableLiveData<List<RepositoryModel>?> = MutableLiveData()
-    val filteredFound: MutableLiveData<Long?> = MutableLiveData()
-    val isDataLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    var requestViewUrl: (Uri?) -> Unit = {}
+    private val filteredRepositories: MutableLiveData<List<RepositoryModel>?> = MutableLiveData()
+    private val filteredFound: MutableLiveData<Long?> = MutableLiveData()
+    private val isDataLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val viewUrlEvent: SingleLiveEvent<Uri?> = SingleLiveEvent()
+
     private var lastLoadedPage = AtomicInteger(0)
     private var lastFilter: String? = null
     private var readItems: List<RepositoryModel> = mutableListOf()
@@ -36,6 +39,11 @@ class BrowseVM(
     init {
         loadCachedRepos()
     }
+
+    fun getFilteredRepositories(): LiveData<List<RepositoryModel>?> = filteredRepositories
+    fun getFilteredFound(): LiveData<Long?> = filteredFound
+    fun getIsDataLoading(): LiveData<Boolean> = isDataLoading
+    fun getViewUrlEvent(): LiveData<Uri?> = viewUrlEvent
 
     fun onRepositoryClick(model: RepositoryModel, position: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,7 +55,7 @@ class BrowseVM(
                 it.readAt = readDate
             }
             runOnUiThread {
-                requestViewUrl(model.url.toUri())
+                viewUrlEvent.value = model.url.toUri()
             }
         }
     }

@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.fragment_browse.view.*
 import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
 import ua.dolhanenko.repobrowser.utils.runOnUiThread
 import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
 
@@ -46,11 +47,14 @@ class HistoryFragment : Fragment(), RepositoriesAdapter.Callback {
     }
 
     override fun onItemClick(model: RepositoryModel, position: Int) {
-
+        viewModel.onItemClick(model)
     }
 
     private fun subscribeForData() {
-        viewModel.cachedRepositories.observe(this) {
+        viewModel.getViewUrlEvent().observe(this) {
+            it?.openInDefaultBrowser(requireContext())
+        }
+        viewModel.getCachedRepositories().observe(this) {
             it?.let {
                 runOnUiThread {
                     adapter.dataList = it
