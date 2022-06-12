@@ -1,8 +1,8 @@
 package ua.dolhanenko.repobrowser.domain.interfaces
 
-import ua.dolhanenko.repobrowser.data.remote.entity.UserResponse
 import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.domain.model.UserModel
 
 
 interface IGithubDataSource {
@@ -12,5 +12,5 @@ interface IGithubDataSource {
         search: String? = null
     ): Resource<FilteredRepositoriesModel?>
 
-    suspend fun queryUserInfo(): UserResponse?
+    suspend fun queryUserInfo(userToken: String): Resource<UserModel?>
 }

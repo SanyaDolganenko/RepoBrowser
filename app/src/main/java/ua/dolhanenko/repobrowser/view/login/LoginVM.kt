@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.data.remote.datasource.BaseApiDataSource
+import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.usecases.GetActiveUserUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.QueryUserInfoUseCase
@@ -66,20 +67,26 @@ class LoginVM(
     private suspend fun queryLoggedInUserInfo() {
         isLoggingIn.postValue(true)
         var isSuccess = false
-        try {
-            if (RepoApp.activeToken != null)
-                queryUserInfoUseCase(RepoApp.activeToken!!)?.let {
-                    saveActiveUserUseCase(it)
-                    isSuccess = true
+        if (RepoApp.activeToken != null)
+            queryUserInfoUseCase(RepoApp.activeToken!!).let {
+                if (it is Resource.Success) {
+                    isSuccess = it.data != null
+                    if (isSuccess) saveActiveUserUseCase(it.data!!)
+                } else if (it is Resource.Error) {
+                    processFailedQueryUser(it)
                 }
-        } catch (e: BaseApiDataSource.NetworkException) {
-            if (e.code == BaseApiDataSource.CODE_UNAUTHORIZED) {
+            }
+        isLoggingIn.postValue(false)
+        result.postValue(isSuccess)
+    }
+
+    private fun <T> processFailedQueryUser(resource: Resource.Error<T>) {
+        (resource.exception as? BaseApiDataSource.NetworkException)?.let {
+            if (it.code == BaseApiDataSource.CODE_UNAUTHORIZED) {
                 //User token expired
                 Log.i("LOGIN_VM", "user token expired or bad credentials")
             }
         }
-        isLoggingIn.postValue(false)
-        result.postValue(isSuccess)
     }
 
     private fun onLoginFail() {
