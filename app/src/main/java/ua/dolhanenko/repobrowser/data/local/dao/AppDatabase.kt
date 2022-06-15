@@ -1,17 +1,15 @@
-package ua.dolhanenko.repobrowser.data.local
+package ua.dolhanenko.repobrowser.data.local.dao
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ua.dolhanenko.repobrowser.data.local.dao.RepositoriesCacheDao
-import ua.dolhanenko.repobrowser.data.local.dao.UsersCacheDao
 import ua.dolhanenko.repobrowser.data.local.entity.AppUser
 import ua.dolhanenko.repobrowser.data.local.entity.Repository
 
 @Database(
     entities = [Repository::class, AppUser::class],
-    version = 4
+    version = 5
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun repositoriesCacheDao(): RepositoriesCacheDao

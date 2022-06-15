@@ -9,7 +9,7 @@ import ua.dolhanenko.repobrowser.data.remote.entity.FilteredReposResponse
 import ua.dolhanenko.repobrowser.data.remote.entity.UserResponse
 
 
-interface GithubApi {
+ interface GithubApi {
     enum class SortingField(val value: String) {
         STARS("stars")
     }

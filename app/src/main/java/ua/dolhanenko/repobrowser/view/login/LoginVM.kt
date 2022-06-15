@@ -11,7 +11,7 @@ import com.google.firebase.auth.OAuthCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.dolhanenko.repobrowser.application.RepoApp
-import ua.dolhanenko.repobrowser.data.remote.datasource.BaseApiDataSource
+import ua.dolhanenko.repobrowser.data.remote.base.BaseApiDataSource
 import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.usecases.GetActiveUserUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.LoginUseCase

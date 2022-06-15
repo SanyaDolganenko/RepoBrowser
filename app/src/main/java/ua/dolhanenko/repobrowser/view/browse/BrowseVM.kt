@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.usecases.FilterReposUseCase
 import ua.dolhanenko.repobrowser.domain.usecases.GetCachedReposUseCase
@@ -27,25 +27,25 @@ class BrowseVM(
     private val saveClickedRepoUseCase: SaveClickedRepoUseCase,
     private val getCachedReposUseCase: GetCachedReposUseCase
 ) : ViewModel() {
-    private val filteredRepositories: MutableLiveData<List<RepositoryModel>?> = MutableLiveData()
+    private val filteredRepositories: MutableLiveData<List<IRepositoryModel>?> = MutableLiveData()
     private val filteredFound: MutableLiveData<Long?> = MutableLiveData()
     private val isDataLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val viewUrlEvent: SingleLiveEvent<Uri?> = SingleLiveEvent()
 
     private var lastLoadedPage = AtomicInteger(0)
     private var lastFilter: String? = null
-    private var readItems: List<RepositoryModel> = mutableListOf()
+    private var readItems: List<IRepositoryModel> = mutableListOf()
 
     init {
         loadCachedRepos()
     }
 
-    fun getFilteredRepositories(): LiveData<List<RepositoryModel>?> = filteredRepositories
+    fun getFilteredRepositories(): LiveData<List<IRepositoryModel>?> = filteredRepositories
     fun getFilteredFound(): LiveData<Long?> = filteredFound
     fun getIsDataLoading(): LiveData<Boolean> = isDataLoading
     fun getViewUrlEvent(): LiveData<Uri?> = viewUrlEvent
 
-    fun onRepositoryClick(model: RepositoryModel, position: Int) {
+    fun onRepositoryClick(model: IRepositoryModel, position: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val readDate = Date()
             saveClickedRepoUseCase(model, readDate)
@@ -54,7 +54,7 @@ class BrowseVM(
                 it.readAt = readDate
             }
             runOnUiThread {
-                viewUrlEvent.value = model.url.toUri()
+                viewUrlEvent.value = model.url?.toUri()
             }
         }
     }
@@ -120,7 +120,7 @@ class BrowseVM(
         }
     }
 
-    private fun appendRepositoriesForDisplay(number: Int, page: List<RepositoryModel>) {
+    private fun appendRepositoriesForDisplay(number: Int, page: List<IRepositoryModel>) {
         viewModelScope.launch(Dispatchers.Main) {
             val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
             Log.d(
@@ -133,7 +133,7 @@ class BrowseVM(
         }
     }
 
-    private fun postRepositoriesForDisplay(number: Int, page: List<RepositoryModel>) {
+    private fun postRepositoriesForDisplay(number: Int, page: List<IRepositoryModel>) {
         Log.d(
             "BROWSE_VM",
             "Rewriting repositories with page #$number ${page.size}"
@@ -142,11 +142,11 @@ class BrowseVM(
         filteredRepositories.postValue(page)
     }
 
-    private fun updateLocalRepositoryModel(position: Int, block: (RepositoryModel) -> Unit) {
+    private fun updateLocalRepositoryModel(position: Int, block: (IRepositoryModel) -> Unit) {
         viewModelScope.launch(Dispatchers.Main) {
             val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
             if (position in current.indices) {
-                val copy = current[position].copy()
+                val copy = current[position].clone()
                 block(copy)
                 current[position] = copy
                 filteredRepositories.value = current
@@ -154,7 +154,7 @@ class BrowseVM(
         }
     }
 
-    private fun List<RepositoryModel>.markReadItems() {
+    private fun List<IRepositoryModel>.markReadItems() {
         forEach { model ->
             readItems.find { it.id == model.id }?.let {
                 model.readAt = it.readAt

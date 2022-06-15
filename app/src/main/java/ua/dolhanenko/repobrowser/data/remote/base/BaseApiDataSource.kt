@@ -1,10 +1,10 @@
-package ua.dolhanenko.repobrowser.data.remote.datasource
+package ua.dolhanenko.repobrowser.data.remote.base
 
 import retrofit2.Response
 import ua.dolhanenko.repobrowser.domain.model.Resource
 
 
-open class BaseApiDataSource {
+abstract class BaseApiDataSource {
     companion object {
         const val CODE_UNAUTHORIZED = 401
     }

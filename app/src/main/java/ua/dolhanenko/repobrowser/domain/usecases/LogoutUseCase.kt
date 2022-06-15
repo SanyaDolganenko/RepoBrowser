@@ -1,7 +1,7 @@
 package ua.dolhanenko.repobrowser.domain.usecases
 
 import ua.dolhanenko.repobrowser.application.RepoApp
-import ua.dolhanenko.repobrowser.domain.interfaces.IUsersRepository
+import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
 
 
 class LogoutUseCase(

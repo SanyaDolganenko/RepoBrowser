@@ -1,15 +1,42 @@
 package ua.dolhanenko.repobrowser.data.remote.entity
 
+import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
+import ua.dolhanenko.repobrowser.domain.model.IOwnerModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
+import java.util.*
 
-data class FilteredReposResponse(val total_count: Long, val items: List<RepoResponse>)
+
+data class FilteredReposResponse(val total_count: Long, override val items: List<RepoResponse>) :
+    IFilteredRepositoriesModel {
+    override var pageNumber: Int = 0
+    override val foundInTotal: Long
+        get() = total_count
+
+}
 
 data class RepoResponse(
-    val id: String, val name: String, val full_name: String?,
-    val description: String?,
-    val stargazers_count: Long?, val watchers_count: Long?,
-    val language: String?,
+    override val id: String,
+    val name: String,
+    val full_name: String?,
+    val stargazers_count: Long,
+    val watchers_count: Long,
     val html_url: String?,
-    val owner: Owner?
-)
+    override val description: String,
+    override val language: String?,
+    override val owner: Owner?
+) : IRepositoryModel {
+    override val title: String get() = name
+    override val stars: Long get() = stargazers_count
+    override val watchers: Long get() = watchers_count
+    override val url: String? get() = html_url
+    override var readAt: Date? = null
 
-data class Owner(val login: String, val avatar_url: String)
+    override fun clone(): IRepositoryModel {
+        return this.copy()
+    }
+}
+
+data class Owner(val login: String, val avatar_url: String) : IOwnerModel {
+    override val name: String get() = login
+    override val avatarUrl: String get() = avatar_url
+}

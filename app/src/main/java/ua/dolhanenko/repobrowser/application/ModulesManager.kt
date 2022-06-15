@@ -1,18 +1,18 @@
 package ua.dolhanenko.repobrowser.application
 
 import android.content.Context
-import ua.dolhanenko.repobrowser.data.local.AppDatabase
-import ua.dolhanenko.repobrowser.data.local.datasource.RepositoriesCacheDataSource
-import ua.dolhanenko.repobrowser.data.local.datasource.UsersCacheDataSource
-import ua.dolhanenko.repobrowser.data.remote.ApiFactory
-import ua.dolhanenko.repobrowser.data.remote.datasource.GithubDataSource
+import ua.dolhanenko.repobrowser.data.local.dao.AppDatabase
+import ua.dolhanenko.repobrowser.data.local.RepositoriesCacheDataSource
+import ua.dolhanenko.repobrowser.data.local.UsersCacheDataSource
+import ua.dolhanenko.repobrowser.data.remote.api.ApiFactory
+import ua.dolhanenko.repobrowser.data.remote.GithubDataSource
 import ua.dolhanenko.repobrowser.data.repository.ReposRepository
 import ua.dolhanenko.repobrowser.data.repository.UsersRepository
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IReposCacheDataSource
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IUsersCacheDataSource
-import ua.dolhanenko.repobrowser.domain.interfaces.IReposRepository
-import ua.dolhanenko.repobrowser.domain.interfaces.IUsersRepository
+import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
+import ua.dolhanenko.repobrowser.data.repository.datasource.IReposCacheDataSource
+import ua.dolhanenko.repobrowser.data.repository.datasource.IUsersCacheDataSource
+import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
+import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
 import ua.dolhanenko.repobrowser.utils.Constants
 
 

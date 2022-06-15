@@ -1,7 +1,7 @@
 package ua.dolhanenko.repobrowser.application
 
 import android.app.Application
-import ua.dolhanenko.repobrowser.data.remote.ApiFactory
+import ua.dolhanenko.repobrowser.data.remote.api.ApiFactory
 import ua.dolhanenko.repobrowser.view.common.ModuledViewModelFactory
 
 

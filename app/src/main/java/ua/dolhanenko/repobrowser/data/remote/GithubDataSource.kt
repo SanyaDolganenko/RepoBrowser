@@ -1,11 +1,11 @@
-package ua.dolhanenko.repobrowser.data.remote.datasource
+package ua.dolhanenko.repobrowser.data.remote
 
 import ua.dolhanenko.repobrowser.data.remote.api.GithubApi
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
-import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
+import ua.dolhanenko.repobrowser.data.remote.base.BaseApiDataSource
+import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
+import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
+import ua.dolhanenko.repobrowser.domain.model.IUserModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
-import ua.dolhanenko.repobrowser.domain.model.UserModel
-import ua.dolhanenko.repobrowser.data.remote.toModel
 
 
 class GithubDataSource(private val api: GithubApi) : BaseApiDataSource(), IGithubDataSource {
@@ -13,28 +13,27 @@ class GithubDataSource(private val api: GithubApi) : BaseApiDataSource(), IGithu
         limit: Int,
         page: Int,
         search: String?
-    ): Resource<FilteredRepositoriesModel?> {
+    ): Resource<IFilteredRepositoriesModel?> {
         val response = api.getAllRepositories(
             limit,
             page,
             search?.toNullIfEmpty()?.toSearchQuery()
         ).await()
         return if (response.isSuccessful) {
-            Resource.Success(response.body()?.toModel(page))
+            Resource.Success(response.body()?.apply { this.pageNumber = page })
         } else {
             response.toErrorResource()
         }
     }
 
-    override suspend fun queryUserInfo(userToken: String): Resource<UserModel?> {
+    override suspend fun queryUserInfo(userToken: String): Resource<IUserModel?> {
         val response = api.getUserInfo().await()
         return if (response.isSuccessful) {
-            Resource.Success(response.body()?.toModel(userToken))
+            Resource.Success(response.body()?.apply { this.lastUsedToken = userToken })
         } else {
             response.toErrorResource()
         }
     }
-
 
     private fun String.toSearchQuery(): String {
         return "$this in:name"

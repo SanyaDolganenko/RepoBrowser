@@ -5,17 +5,17 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import ua.dolhanenko.repobrowser.data.local.toDbEntity
-import ua.dolhanenko.repobrowser.data.local.toModel
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IReposCacheDataSource
-import ua.dolhanenko.repobrowser.domain.interfaces.IReposRepository
-import ua.dolhanenko.repobrowser.domain.model.FilteredRepositoriesModel
-import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.data.local.entity.toDbEntity
+
+import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
+import ua.dolhanenko.repobrowser.data.repository.datasource.IReposCacheDataSource
+import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
 import java.util.concurrent.atomic.AtomicInteger
 
-typealias UnpublishedPage = Pair<Int, Resource<FilteredRepositoriesModel?>>
+typealias UnpublishedPage = Pair<Int, Resource<IFilteredRepositoriesModel?>>
 
 class ReposRepository(
     private val pageSize: Int,
@@ -33,7 +33,7 @@ class ReposRepository(
     override fun getFreshFilteredPagesAsync(
         filter: String,
         pageNumbers: IntArray
-    ): Flow<Resource<FilteredRepositoriesModel?>> = channelFlow {
+    ): Flow<Resource<IFilteredRepositoriesModel?>> = channelFlow {
         pageNumbers.minOrNull()?.let { pageNumOffset = it - 1 }
         loadedPages.set(0)
         pageNumbers.forEach { pageNumber ->
@@ -63,7 +63,7 @@ class ReposRepository(
     }
 
     @Synchronized
-    private fun Resource<FilteredRepositoriesModel?>.addToUnpublishedSafe(pageNumber: Int) {
+    private fun Resource<IFilteredRepositoriesModel?>.addToUnpublishedSafe(pageNumber: Int) {
         (unpublishedPages as MutableList).let {
             it.add(pageNumber to this)
             it.sortBy { it.first }
@@ -71,7 +71,7 @@ class ReposRepository(
     }
 
     @Synchronized
-    private fun ProducerScope<Resource<FilteredRepositoriesModel?>>.processUnpublishedPages() {
+    private fun ProducerScope<Resource<IFilteredRepositoriesModel?>>.processUnpublishedPages() {
         val iterator = (unpublishedPages as MutableList).iterator()
         while (iterator.hasNext()) {
             val current = iterator.next()
@@ -86,15 +86,15 @@ class ReposRepository(
         }
     }
 
-    override fun getReadItems(byUserId: Long): List<RepositoryModel> {
-        return reposCacheDataSource.getItems(byUserId).map { it.toModel() }
+    override fun getReadItems(byUserId: Long): List<IRepositoryModel> {
+        return reposCacheDataSource.getItems(byUserId)
     }
 
-    override fun insertRead(repository: RepositoryModel, forUserId: Long, viewedAt: Long) {
-        reposCacheDataSource.insert(repository.toDbEntity(forUserId, viewedAt))
+    override fun insertRead(repository: IRepositoryModel, forUserId: Long, viewedAt: Long) {
+        reposCacheDataSource.insert(repository, forUserId, viewedAt)
     }
 
-    override fun deleteRead(repository: RepositoryModel) {
-        reposCacheDataSource.delete(repository.toDbEntity(0))
+    override fun deleteRead(repository: IRepositoryModel) {
+        reposCacheDataSource.delete(repository)
     }
 }

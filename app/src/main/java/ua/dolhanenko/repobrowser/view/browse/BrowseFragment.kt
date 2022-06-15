@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_browse.*
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.databinding.FragmentBrowseBinding
-import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.utils.Constants
 import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
 import ua.dolhanenko.repobrowser.utils.toVisibility
@@ -68,7 +68,7 @@ class BrowseFragment : BaseFragment<FragmentBrowseBinding>(), RepositoriesAdapte
         }
     }
 
-    override fun onItemClick(model: RepositoryModel, position: Int) {
+    override fun onItemClick(model: IRepositoryModel, position: Int) {
         viewModel.onRepositoryClick(model, position)
     }
 

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.browse_list_item.view.*
 import ua.dolhanenko.repobrowser.databinding.BrowseListItemBinding
-import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.utils.colorPrimary
 import ua.dolhanenko.repobrowser.utils.toVisibility
 import java.text.DateFormat
@@ -21,7 +21,7 @@ import java.util.*
 
 class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
     RecyclerView.Adapter<RepositoriesAdapter.ViewHolder>() {
-    var dataList: List<RepositoryModel> = listOf()
+    var dataList: List<IRepositoryModel> = listOf()
         set(value) {
             val callback = DiffCallback(field, value)
             field = value
@@ -47,7 +47,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
 
     inner class ViewHolder(private val binding: BrowseListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: RepositoryModel) {
+        fun bind(model: IRepositoryModel) {
             binding.apply {
                 indexTextView.visibility = showPositions.toVisibility(true)
                 if (showPositions) {
@@ -58,7 +58,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
                 language.text = model.language ?: ""
                 watchCount.text = model.watchers.toString()
                 starCount.text = model.stars.toString()
-                userName.text = model.owner.name
+                userName.text = model.owner?.name
                 readAt.visibility = View.INVISIBLE
                 readImageView.visibility = View.INVISIBLE
                 readIndicator.visibility = View.INVISIBLE
@@ -71,7 +71,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
                         DateFormat.SHORT, Locale.getDefault()
                     ).format(it)
                 }
-                Glide.with(avatarView).load(model.owner.avatarUrl).into(avatarView)
+                Glide.with(avatarView).load(model.owner?.avatarUrl).into(avatarView)
                 root.setOnClickListener {
                     callback.onItemClick(model, adapterPosition)
                 }
@@ -96,8 +96,8 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
     }
 
     class DiffCallback(
-        private val oldList: List<RepositoryModel>,
-        private val newList: List<RepositoryModel>
+        private val oldList: List<IRepositoryModel>,
+        private val newList: List<IRepositoryModel>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].id == newList[newItemPosition].id
@@ -115,6 +115,6 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
     }
 
     interface Callback {
-        fun onItemClick(model: RepositoryModel, position: Int)
+        fun onItemClick(model: IRepositoryModel, position: Int)
     }
 }

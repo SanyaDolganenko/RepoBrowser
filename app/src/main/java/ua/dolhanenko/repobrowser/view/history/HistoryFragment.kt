@@ -7,7 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ua.dolhanenko.repobrowser.application.RepoApp
 import ua.dolhanenko.repobrowser.databinding.FragmentHistoryBinding
-import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
 import ua.dolhanenko.repobrowser.view.common.BaseFragment
 import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
@@ -36,7 +36,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(), RepositoriesAdap
         }
     }
 
-    override fun onItemClick(model: RepositoryModel, position: Int) {
+    override fun onItemClick(model: IRepositoryModel, position: Int) {
         viewModel.onItemClick(model)
     }
 

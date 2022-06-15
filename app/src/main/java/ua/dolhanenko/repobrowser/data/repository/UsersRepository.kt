@@ -1,32 +1,29 @@
 package ua.dolhanenko.repobrowser.data.repository
 
-import ua.dolhanenko.repobrowser.data.local.toDbEntity
-import ua.dolhanenko.repobrowser.data.local.toModel
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IGithubDataSource
-import ua.dolhanenko.repobrowser.data.repository.interfaces.IUsersCacheDataSource
-import ua.dolhanenko.repobrowser.domain.interfaces.IUsersRepository
+import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
+import ua.dolhanenko.repobrowser.data.repository.datasource.IUsersCacheDataSource
+import ua.dolhanenko.repobrowser.domain.model.IUserModel
 import ua.dolhanenko.repobrowser.domain.model.Resource
-import ua.dolhanenko.repobrowser.domain.model.UserModel
-
+import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
 
 
 class UsersRepository(
     private val githubDataSource: IGithubDataSource,
     private val usersCacheDataSource: IUsersCacheDataSource
 ) : IUsersRepository {
-    override suspend fun queryFreshUserInfo(userToken: String): Resource<UserModel?> {
+    override suspend fun queryFreshUserInfo(userToken: String): Resource<IUserModel?> {
         return githubDataSource.queryUserInfo(userToken)
     }
 
-    override fun getActiveUser(): UserModel? {
-        return usersCacheDataSource.getActiveUser()?.toModel()
+    override fun getActiveUser(): IUserModel? {
+        return usersCacheDataSource.getActiveUser()
     }
 
-    override fun saveActiveUser(model: UserModel) {
-        usersCacheDataSource.saveActiveUser(model.toDbEntity(true))
+    override fun saveActiveUser(model: IUserModel) {
+        usersCacheDataSource.saveActiveUser(model)
     }
 
-    override fun deleteActiveUser(model: UserModel) {
-        usersCacheDataSource.deleteUser(model.toDbEntity(true))
+    override fun deleteActiveUser(model: IUserModel) {
+        usersCacheDataSource.deleteActiveUser(model)
     }
 }
