@@ -5,26 +5,25 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_browse.*
-import kotlinx.android.synthetic.main.fragment_browse.view.*
-import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.application.RepoApp
+import ua.dolhanenko.repobrowser.databinding.FragmentBrowseBinding
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.utils.Constants
 import ua.dolhanenko.repobrowser.utils.openInDefaultBrowser
-import ua.dolhanenko.repobrowser.utils.runOnUiThread
 import ua.dolhanenko.repobrowser.utils.toVisibility
+import ua.dolhanenko.repobrowser.view.common.BaseFragment
 import ua.dolhanenko.repobrowser.view.common.RepositoriesAdapter
 
 
-class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
+class BrowseFragment : BaseFragment<FragmentBrowseBinding>(), RepositoriesAdapter.Callback {
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentBrowseBinding =
+        FragmentBrowseBinding::inflate
     private val viewModel: BrowseVM by viewModels { RepoApp.vmFactory }
     private val adapter: RepositoriesAdapter = RepositoriesAdapter(true, this)
     private val inputHandler = Handler(Looper.getMainLooper())
@@ -33,18 +32,8 @@ class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
         subscribeForData()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_browse, container, false)
-        initViews(root)
-        return root
-    }
-
-    private fun initViews(root: View) {
-        root.searchEditText.addTextChangedListener {
+    override fun initViews() {
+        binding.searchEditText.addTextChangedListener {
             inputHandler.removeCallbacksAndMessages(null)
             inputHandler.postDelayed({
                 Log.d("BROWSE_FR", "Executing timer to apply filter")
@@ -52,11 +41,11 @@ class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
                 viewModel.onFilterInput(it?.toString())
             }, Constants.FILTER_DELAY_MS)
         }
-        initRecyclerView(root)
+        initRecyclerView()
     }
 
-    private fun initRecyclerView(root: View) {
-        root.recyclerView.apply {
+    private fun initRecyclerView() {
+        binding.recyclerView.apply {
             layoutManager = createPaginationAwareLayoutManager()
             adapter = this@BrowseFragment.adapter
         }
@@ -89,20 +78,14 @@ class BrowseFragment : Fragment(), RepositoriesAdapter.Callback {
         }
         viewModel.getFilteredRepositories().observe(this) {
             it?.let {
-                runOnUiThread {
-                    adapter.dataList = it
-                }
+                adapter.dataList = it
             }
         }
         viewModel.getIsDataLoading().observe(this) {
-            runOnUiThread {
-                progressPar.visibility = it.toVisibility()
-            }
+            progressPar.visibility = it.toVisibility()
         }
         viewModel.getFilteredFound().observe(this) {
-            runOnUiThread {
-                countTextView.text = it?.toString()
-            }
+            countTextView.text = it?.toString()
         }
     }
 

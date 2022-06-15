@@ -2,6 +2,7 @@ package ua.dolhanenko.repobrowser.view.login
 
 import android.app.Activity
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,12 +25,15 @@ class LoginVM(
     private val saveActiveUserUseCase: SaveActiveUserUseCase,
     private val getActiveUserUseCase: GetActiveUserUseCase
 ) : ViewModel() {
-    val isLoggingIn: MutableLiveData<Boolean> = MutableLiveData(false)
-    val result: MutableLiveData<Boolean?> = MutableLiveData()
+    private val isLoggingIn: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val getAuthResult: MutableLiveData<Boolean?> = MutableLiveData()
 
     init {
         attemptLoginWthLastActiveUser()
     }
+
+    fun getIsLoggingIn(): LiveData<Boolean> = isLoggingIn
+    fun getAuthResult(): LiveData<Boolean?> = getAuthResult
 
     fun onLoginClick(activity: Activity, userName: String) {
         isLoggingIn.postValue(true)
@@ -77,7 +81,7 @@ class LoginVM(
                 }
             }
         isLoggingIn.postValue(false)
-        result.postValue(isSuccess)
+        getAuthResult.postValue(isSuccess)
     }
 
     private fun <T> processFailedQueryUser(resource: Resource.Error<T>) {
@@ -90,7 +94,7 @@ class LoginVM(
     }
 
     private fun onLoginFail() {
-        result.postValue(false)
+        getAuthResult.postValue(false)
         isLoggingIn.postValue(false)
     }
 }

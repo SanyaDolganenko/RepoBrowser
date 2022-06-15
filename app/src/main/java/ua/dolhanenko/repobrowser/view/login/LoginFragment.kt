@@ -3,19 +3,18 @@ package ua.dolhanenko.repobrowser.view.login
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
-import ua.dolhanenko.repobrowser.R
 import ua.dolhanenko.repobrowser.application.RepoApp
-import ua.dolhanenko.repobrowser.utils.runOnUiThread
+import ua.dolhanenko.repobrowser.databinding.FragmentLoginBinding
 import ua.dolhanenko.repobrowser.utils.toVisibility
+import ua.dolhanenko.repobrowser.view.common.BaseFragment
 
 
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment<FragmentLoginBinding>() {
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLoginBinding =
+        FragmentLoginBinding::inflate
     private val viewModel: LoginVM by viewModels { RepoApp.vmFactory }
     private var callback: Callback? = null
 
@@ -31,34 +30,20 @@ class LoginFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_login, container, false)
-        initViews(root)
-        return root
-    }
-
-    private fun initViews(root: View) {
-        root.buttonLogin.setOnClickListener {
+    override fun initViews() {
+        binding.buttonLogin.setOnClickListener {
             viewModel.onLoginClick(requireActivity(), "")
         }
     }
 
     private fun subscribe() {
-        viewModel.result.observe(this) {
+        viewModel.getAuthResult().observe(this) {
             it?.let {
-                runOnUiThread {
-                    if (it) callback?.onLoginSuccess()
-                }
+                if (it) callback?.onLoginSuccess()
             }
         }
-        viewModel.isLoggingIn.observe(this) {
-            runOnUiThread {
-                loadingLayout.visibility = it.toVisibility(true)
-            }
+        viewModel.getIsLoggingIn().observe(this) {
+            loadingLayout.visibility = it.toVisibility(true)
         }
     }
 

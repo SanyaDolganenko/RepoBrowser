@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.browse_list_item.view.*
-import ua.dolhanenko.repobrowser.R
+import ua.dolhanenko.repobrowser.databinding.BrowseListItemBinding
 import ua.dolhanenko.repobrowser.domain.model.RepositoryModel
 import ua.dolhanenko.repobrowser.utils.colorPrimary
 import ua.dolhanenko.repobrowser.utils.toVisibility
@@ -30,11 +30,12 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
     var currentFilter: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.browse_list_item,
-            parent, false
+        val binding = BrowseListItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
         )
-        return ViewHolder(itemView)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -44,9 +45,10 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
 
     override fun getItemCount(): Int = dataList.size
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(private val binding: BrowseListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(model: RepositoryModel) {
-            itemView.apply {
+            binding.apply {
                 indexTextView.visibility = showPositions.toVisibility(true)
                 if (showPositions) {
                     indexTextView.text = (adapterPosition + 1).toString()
@@ -69,7 +71,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
                         DateFormat.SHORT, Locale.getDefault()
                     ).format(it)
                 }
-                Glide.with(this).load(model.owner.avatarUrl).into(avatarView)
+                Glide.with(avatarView).load(model.owner.avatarUrl).into(avatarView)
                 root.setOnClickListener {
                     callback.onItemClick(model, adapterPosition)
                 }

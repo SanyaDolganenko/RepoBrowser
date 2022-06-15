@@ -10,6 +10,10 @@ plugins {
 android {
     compileSdk 32
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "ua.dolhanenko.repobrowser"
         minSdk 21
