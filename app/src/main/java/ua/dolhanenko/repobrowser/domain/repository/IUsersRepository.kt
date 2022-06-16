@@ -1,6 +1,6 @@
 package ua.dolhanenko.repobrowser.domain.repository
 
-import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
 
 

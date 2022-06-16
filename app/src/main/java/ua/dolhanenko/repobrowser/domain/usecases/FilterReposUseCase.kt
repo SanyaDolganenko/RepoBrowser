@@ -1,12 +1,13 @@
 package ua.dolhanenko.repobrowser.domain.usecases
 
 import kotlinx.coroutines.flow.Flow
-import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
+import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
-import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
+import javax.inject.Inject
 
 
-class FilterReposUseCase(private val reposRepository: IReposRepository) {
+class FilterReposUseCase @Inject constructor(private val reposRepository: IReposRepository) {
     operator fun invoke(
         filter: String,
         pageNumbers: IntArray

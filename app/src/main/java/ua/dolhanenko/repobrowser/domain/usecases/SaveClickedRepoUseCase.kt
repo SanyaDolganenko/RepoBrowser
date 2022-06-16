@@ -1,12 +1,13 @@
 package ua.dolhanenko.repobrowser.domain.usecases
 
+import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
 import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
-import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import java.util.*
+import javax.inject.Inject
 
 
-class SaveClickedRepoUseCase(
+class SaveClickedRepoUseCase @Inject constructor(
     private val reposRepository: IReposRepository,
     private val usersRepository: IUsersRepository
 ) {

@@ -3,7 +3,7 @@ package ua.dolhanenko.repobrowser.domain.repository
 import kotlinx.coroutines.flow.Flow
 import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
-import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.core.Resource
 
 
 interface IReposRepository {

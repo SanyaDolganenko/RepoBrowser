@@ -1,7 +1,7 @@
 package ua.dolhanenko.repobrowser.data.remote.base
 
 import retrofit2.Response
-import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.core.Resource
 
 
 abstract class BaseApiDataSource {

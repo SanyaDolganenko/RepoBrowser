@@ -3,7 +3,7 @@ package ua.dolhanenko.repobrowser.data.repository
 import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IUsersCacheDataSource
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
-import ua.dolhanenko.repobrowser.domain.model.Resource
+import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
 
 

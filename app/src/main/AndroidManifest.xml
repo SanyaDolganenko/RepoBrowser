@@ -3,7 +3,7 @@
     package="ua.dolhanenko.repobrowser">
 
     <application
-        android:name=".application.RepoApp"
+        android:name=".RepoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RepoBrowser">
         <activity
-            android:name=".view.host.HostActivity"
+            android:name=".presentation.host.HostActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="nosensor">

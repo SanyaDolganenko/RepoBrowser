@@ -7,12 +7,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ua.dolhanenko.repobrowser.BuildConfig
-import ua.dolhanenko.repobrowser.application.RepoApp
+import ua.dolhanenko.repobrowser.RepoApp
 import java.util.concurrent.TimeUnit
 
 
-class ApiFactory {
+class ApiFactory(private val baseUrl: String) : IApiFactory {
     private fun Request.Builder.setupAuth(): Request.Builder {
         addHeader(
             "Authorization",
@@ -36,12 +35,12 @@ class ApiFactory {
 
     private fun retrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
         .client(client)
-        .baseUrl(BuildConfig.API_BASE_URL)
+        .baseUrl(baseUrl)
         .addConverterFactory(
             GsonConverterFactory.create(GsonBuilder().create())
         )
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
-    val githubApi: GithubApi = retrofit(requestClient).create(GithubApi::class.java)
+    override fun createDefaultRetrofit(): Retrofit = retrofit(requestClient)
 }

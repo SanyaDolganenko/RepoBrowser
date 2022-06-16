@@ -5,19 +5,18 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import ua.dolhanenko.repobrowser.data.local.entity.toDbEntity
-
+import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IReposCacheDataSource
 import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
-import ua.dolhanenko.repobrowser.domain.model.Resource
 import ua.dolhanenko.repobrowser.domain.repository.IReposRepository
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
 typealias UnpublishedPage = Pair<Int, Resource<IFilteredRepositoriesModel?>>
 
-class ReposRepository(
+class ReposRepository @Inject constructor(
     private val pageSize: Int,
     private val githubDataSource: IGithubDataSource,
     private val reposCacheDataSource: IReposCacheDataSource

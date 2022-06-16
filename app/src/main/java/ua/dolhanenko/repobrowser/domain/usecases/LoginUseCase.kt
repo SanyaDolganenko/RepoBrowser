@@ -5,11 +5,12 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
-class LoginUseCase {
+@Deprecated("Activity should not be passed here")
+class LoginUseCase @Inject constructor() {
     suspend operator fun invoke(userName: String, activity: Activity): Task<AuthResult> =
         suspendCoroutine { cont ->
             val provider = OAuthProvider.newBuilder("github.com")
