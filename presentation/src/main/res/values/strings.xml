@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">RepoBrowser</string>
+    <string name="hint_browse_repos">Search repositories</string>
+    <string name="hint_login">Username (optional)</string>
+    <string name="button_login">LOGIN VIA GITHUB</string>
+    <string name="tab_browse">Browse</string>
+    <string name="tab_history">History</string>
+    <string name="button_logout">LOGOUT</string>
+    <string name="title_greeting">Welcome</string>
+</resources>

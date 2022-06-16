@@ -1,6 +1,7 @@
 package ua.dolhanenko.repobrowser.utils.log
 
 import android.util.Log
+import ua.dolhanenko.repobrowser.core.ILogger
 import javax.inject.Inject
 
 

@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ua.dolhanenko.repobrowser.utils.log.ILogger
+import ua.dolhanenko.repobrowser.core.ILogger
 import ua.dolhanenko.repobrowser.utils.log.Logger
 import javax.inject.Singleton
 
