@@ -11,13 +11,17 @@ import ua.dolhanenko.repobrowser.presentation.base.BaseFragment
 import ua.dolhanenko.repobrowser.presentation.common.RepositoriesAdapter
 import ua.dolhanenko.repobrowser.presentation.databinding.FragmentHistoryBinding
 import ua.dolhanenko.repobrowser.presentation.utils.openInDefaultBrowser
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class HistoryFragment : BaseFragment<FragmentHistoryBinding>(), RepositoriesAdapter.Callback {
+internal class HistoryFragment : BaseFragment<FragmentHistoryBinding>(),
+    RepositoriesAdapter.Callback {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHistoryBinding =
         FragmentHistoryBinding::inflate
     private val viewModel: HistoryVM by viewModels()
-    private val adapter: RepositoriesAdapter = RepositoriesAdapter(false, this)
+
+    @Inject
+    lateinit var adapter: RepositoriesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,8 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(), RepositoriesAdap
     }
 
     private fun initRecyclerView() {
+        adapter.callback = this
+        adapter.showPositions = false
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@HistoryFragment.adapter

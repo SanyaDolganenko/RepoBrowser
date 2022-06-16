@@ -3,7 +3,6 @@ package ua.dolhanenko.repobrowser.presentation.browse
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
@@ -19,14 +18,18 @@ import ua.dolhanenko.repobrowser.presentation.common.RepositoriesAdapter
 import ua.dolhanenko.repobrowser.presentation.databinding.FragmentBrowseBinding
 import ua.dolhanenko.repobrowser.presentation.utils.openInDefaultBrowser
 import ua.dolhanenko.repobrowser.presentation.utils.toVisibility
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class BrowseFragment : BaseFragment<FragmentBrowseBinding>(), RepositoriesAdapter.Callback {
+internal class BrowseFragment : BaseFragment<FragmentBrowseBinding>(),
+    RepositoriesAdapter.Callback {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentBrowseBinding =
         FragmentBrowseBinding::inflate
     private val viewModel: BrowseVM by viewModels()
-    private val adapter: RepositoriesAdapter = RepositoriesAdapter(true, this)
     private val inputHandler = Handler(Looper.getMainLooper())
+
+    @Inject
+    lateinit var adapter: RepositoriesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +37,23 @@ class BrowseFragment : BaseFragment<FragmentBrowseBinding>(), RepositoriesAdapte
     }
 
     override fun initViews() {
+        initSearchEditText()
+        initRecyclerView()
+    }
+
+    private fun initSearchEditText() {
         binding.searchEditText.addTextChangedListener {
             inputHandler.removeCallbacksAndMessages(null)
             inputHandler.postDelayed({
-                Log.d("BROWSE_FR", "Executing timer to apply filter")
                 adapter.currentFilter = it?.toString()
                 viewModel.onFilterInput(it?.toString())
             }, Constants.FILTER_DELAY_MS)
         }
-        initRecyclerView()
     }
 
     private fun initRecyclerView() {
+        adapter.callback = this
+        adapter.showPositions = true
         binding.recyclerView.apply {
             layoutManager = createPaginationAwareLayoutManager()
             adapter = this@BrowseFragment.adapter
@@ -61,7 +69,7 @@ class BrowseFragment : BaseFragment<FragmentBrowseBinding>(), RepositoriesAdapte
                 super.onScrollStateChanged(state)
                 if (state == RecyclerView.SCROLL_STATE_IDLE) {
                     if (isLastItemVisible()) {
-                        Log.d("BROWSE_FR", "Reached end of list. Notifying VM.")
+                        logger.d("BROWSE_FR", "Reached end of list. Notifying VM.")
                         viewModel.onPageEndReached()
                     }
                 }

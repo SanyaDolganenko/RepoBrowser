@@ -13,7 +13,7 @@ import ua.dolhanenko.repobrowser.presentation.utils.runOnUiThread
 import javax.inject.Inject
 
 @HiltViewModel
-class HostVM @Inject constructor(private val logoutUseCase: LogoutUseCase) : BaseVM() {
+internal class HostVM @Inject constructor(private val logoutUseCase: LogoutUseCase) : BaseVM() {
     private val isLogoutVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     private val successfulLogoutEvent: SingleLiveEvent<Void> = SingleLiveEvent()
 

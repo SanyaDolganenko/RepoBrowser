@@ -4,7 +4,7 @@ import androidx.room.*
 import ua.dolhanenko.repobrowser.data.local.entity.Repository
 
 @Dao
-interface RepositoriesCacheDao {
+internal interface RepositoriesCacheDao {
     @Query("SELECT * FROM repository WHERE byUserId LIKE :byUserId ORDER BY readTime DESC")
     fun getItems(byUserId: Long): List<Repository>
 

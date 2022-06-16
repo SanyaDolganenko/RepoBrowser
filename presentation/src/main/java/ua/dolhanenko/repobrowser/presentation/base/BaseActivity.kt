@@ -7,7 +7,7 @@ import androidx.viewbinding.ViewBinding
 import ua.dolhanenko.repobrowser.core.ILogger
 import javax.inject.Inject
 
-abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
+internal abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
     @Inject
     protected lateinit var logger: ILogger
 

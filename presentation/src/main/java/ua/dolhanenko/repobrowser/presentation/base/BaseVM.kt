@@ -5,7 +5,7 @@ import ua.dolhanenko.repobrowser.core.ILogger
 import javax.inject.Inject
 
 
-abstract class BaseVM : ViewModel() {
+internal abstract class BaseVM : ViewModel() {
     @Inject
     protected lateinit var logger: ILogger
 }

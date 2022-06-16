@@ -4,7 +4,7 @@ import androidx.room.*
 import ua.dolhanenko.repobrowser.data.local.entity.AppUser
 
 @Dao
-interface UsersCacheDao {
+internal interface UsersCacheDao {
     @Query("SELECT * FROM appuser WHERE isActive = 1")
     fun getActiveUser(): AppUser?
 

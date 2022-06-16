@@ -11,7 +11,7 @@ import ua.dolhanenko.repobrowser.data.repository.datasource.IActiveTokenDataSour
 import java.util.concurrent.TimeUnit
 
 
-class ApiFactory(
+internal class ApiFactory(
     private val activeTokenDataSource: IActiveTokenDataSource,
     private val baseUrl: String
 ) :

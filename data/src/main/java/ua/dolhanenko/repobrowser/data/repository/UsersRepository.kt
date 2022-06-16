@@ -8,7 +8,7 @@ import ua.dolhanenko.repobrowser.domain.model.IUserModel
 import ua.dolhanenko.repobrowser.domain.repository.IUsersRepository
 
 
-class UsersRepository(
+internal class UsersRepository(
     private val activeTokenDataSource: IActiveTokenDataSource,
     private val githubDataSource: IGithubDataSource,
     private val usersCacheDataSource: IUsersCacheDataSource

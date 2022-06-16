@@ -6,7 +6,7 @@ import ua.dolhanenko.repobrowser.data.repository.datasource.IReposCacheDataSourc
 import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 
 
-class ReposCacheDataSource(private val dao: RepositoriesCacheDao) : IReposCacheDataSource {
+internal class ReposCacheDataSource(private val dao: RepositoriesCacheDao) : IReposCacheDataSource {
     override fun getItems(byUserId: Long): List<IRepositoryModel> {
         return dao.getItems(byUserId)
     }

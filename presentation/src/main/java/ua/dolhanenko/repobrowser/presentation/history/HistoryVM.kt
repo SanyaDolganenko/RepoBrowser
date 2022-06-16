@@ -15,7 +15,7 @@ import ua.dolhanenko.repobrowser.presentation.utils.toUri
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryVM @Inject constructor(
+internal class HistoryVM @Inject constructor(
     private val getCachedReposUseCase: GetCachedReposUseCase
 ) : BaseVM() {
     private val cachedRepositories: MutableLiveData<List<IRepositoryModel>?> = MutableLiveData()

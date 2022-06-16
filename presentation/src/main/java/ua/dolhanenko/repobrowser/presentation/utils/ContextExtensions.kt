@@ -5,7 +5,7 @@ import android.content.res.TypedArray
 import android.util.TypedValue
 
 
-var Context.colorPrimary: Int
+internal var Context.colorPrimary: Int
     get() {
         return getStyleColor(android.R.attr.colorPrimary)
     }

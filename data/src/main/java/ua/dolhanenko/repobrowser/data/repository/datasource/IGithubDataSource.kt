@@ -1,7 +1,7 @@
 package ua.dolhanenko.repobrowser.data.repository.datasource
 
-import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.core.Resource
+import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
 
 

@@ -5,7 +5,7 @@ import ua.dolhanenko.repobrowser.core.NetworkException
 import ua.dolhanenko.repobrowser.core.Resource
 
 
-abstract class BaseApiDataSource {
+internal abstract class BaseApiDataSource {
     protected fun <T> Response<*>.toErrorResource(): Resource.Error<T> {
         return Resource.Error(NetworkException(code(), errorBody()?.string() ?: ""))
     }

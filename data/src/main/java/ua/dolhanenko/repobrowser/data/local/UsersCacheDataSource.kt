@@ -6,7 +6,7 @@ import ua.dolhanenko.repobrowser.data.repository.datasource.IUsersCacheDataSourc
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
 
 
-class UsersCacheDataSource(private val dao: UsersCacheDao) : IUsersCacheDataSource {
+internal class UsersCacheDataSource(private val dao: UsersCacheDao) : IUsersCacheDataSource {
     override fun getActiveUser(): IUserModel? {
         return dao.getActiveUser()
     }

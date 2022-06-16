@@ -1,10 +1,10 @@
 package ua.dolhanenko.repobrowser.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
+import ua.dolhanenko.repobrowser.core.ILogger
 import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IReposCacheDataSource
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 typealias UnpublishedPage = Pair<Int, Resource<IFilteredRepositoriesModel?>>
 
-class ReposRepository @Inject constructor(
+internal class ReposRepository @Inject constructor(
     private val pageSize: Int,
     private val githubDataSource: IGithubDataSource,
     private val reposCacheDataSource: IReposCacheDataSource
@@ -24,6 +24,9 @@ class ReposRepository @Inject constructor(
     private companion object {
         const val LOG_TAG = "REPOS_REPO"
     }
+
+    @Inject
+    lateinit var logger: ILogger
 
     private val loadedPages: AtomicInteger = AtomicInteger(0)
     private var pageNumOffset: Int = 0
@@ -37,15 +40,15 @@ class ReposRepository @Inject constructor(
         loadedPages.set(0)
         pageNumbers.forEach { pageNumber ->
             launch {
-                Log.d(LOG_TAG, "Fetching page #$pageNumber")
+                logger.d(LOG_TAG, "Fetching page #$pageNumber")
                 val pageResource = githubDataSource.browseRepositories(pageSize, pageNumber, filter)
                 val currentlyLoaded = loadedPages.incrementAndGet()
-                Log.d(LOG_TAG, "Currently loaded: $currentlyLoaded")
+                logger.d(LOG_TAG, "Currently loaded: $currentlyLoaded")
                 if (pageNumber - (currentlyLoaded + pageNumOffset) <= 0) {
-                    Log.d(LOG_TAG, "Emitting page #$pageNumber")
+                    logger.d(LOG_TAG, "Emitting page #$pageNumber")
                     trySend(pageResource)
                 } else {
-                    Log.d(
+                    logger.d(
                         LOG_TAG,
                         "Saving unpublished page #$pageNumber for later"
                     )
@@ -53,7 +56,7 @@ class ReposRepository @Inject constructor(
                 }
                 processUnpublishedPages()
                 if (loadedPages.get() == pageNumbers.size) {
-                    Log.d(LOG_TAG, "All done. Closing channel")
+                    logger.d(LOG_TAG, "All done. Closing channel")
                     (unpublishedPages as MutableList).clear()
                     close()
                 }
@@ -76,7 +79,7 @@ class ReposRepository @Inject constructor(
             val current = iterator.next()
             val currentlyLoaded = loadedPages.get()
             if (current.first - (currentlyLoaded + pageNumOffset) <= 0) {
-                Log.d(LOG_TAG, "Emitting unpublished page #${current.first}")
+                logger.d(LOG_TAG, "Emitting unpublished page #${current.first}")
                 trySend(current.second)
                 iterator.remove()
             } else {

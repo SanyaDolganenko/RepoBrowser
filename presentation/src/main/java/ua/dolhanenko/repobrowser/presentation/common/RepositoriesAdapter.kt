@@ -8,19 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.browse_list_item.view.*
 import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import ua.dolhanenko.repobrowser.presentation.databinding.BrowseListItemBinding
 import ua.dolhanenko.repobrowser.presentation.utils.colorPrimary
+import ua.dolhanenko.repobrowser.presentation.utils.loader.IImageLoader
 import ua.dolhanenko.repobrowser.presentation.utils.toVisibility
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
-class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
+internal class RepositoriesAdapter @Inject constructor(private val imageLoader: IImageLoader) :
     RecyclerView.Adapter<RepositoriesAdapter.ViewHolder>() {
+    /**
+     * Enable or disable position views on the beginning of view holders.
+     */
+    var showPositions: Boolean = false
+    var callback: Callback? = null
     var dataList: List<IRepositoryModel> = listOf()
         set(value) {
             val callback = DiffCallback(field, value)
@@ -47,6 +53,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
 
     inner class ViewHolder(private val binding: BrowseListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(model: IRepositoryModel) {
             binding.apply {
                 indexTextView.visibility = showPositions.toVisibility(true)
@@ -71,9 +78,9 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
                         DateFormat.SHORT, Locale.getDefault()
                     ).format(it)
                 }
-                Glide.with(avatarView).load(model.owner?.avatarUrl).into(avatarView)
+                imageLoader.load(model.owner?.avatarUrl, avatarView)
                 root.setOnClickListener {
-                    callback.onItemClick(model, adapterPosition)
+                    callback?.onItemClick(model, adapterPosition)
                 }
             }
         }
@@ -95,7 +102,7 @@ class RepositoriesAdapter(val showPositions: Boolean, val callback: Callback) :
         }
     }
 
-    class DiffCallback(
+    private class DiffCallback(
         private val oldList: List<IRepositoryModel>,
         private val newList: List<IRepositoryModel>
     ) : DiffUtil.Callback() {

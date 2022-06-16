@@ -12,7 +12,7 @@ import ua.dolhanenko.repobrowser.presentation.databinding.FragmentLoginBinding
 import ua.dolhanenko.repobrowser.presentation.utils.toVisibility
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment<FragmentLoginBinding>() {
+internal class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLoginBinding =
         FragmentLoginBinding::inflate
     private val viewModel: LoginVM by viewModels()

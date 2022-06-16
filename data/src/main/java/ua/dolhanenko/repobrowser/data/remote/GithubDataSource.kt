@@ -1,14 +1,15 @@
 package ua.dolhanenko.repobrowser.data.remote
 
+import ua.dolhanenko.repobrowser.core.Resource
 import ua.dolhanenko.repobrowser.data.remote.api.GithubApi
 import ua.dolhanenko.repobrowser.data.remote.base.BaseApiDataSource
 import ua.dolhanenko.repobrowser.data.repository.datasource.IGithubDataSource
 import ua.dolhanenko.repobrowser.domain.model.IFilteredRepositoriesModel
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
-import ua.dolhanenko.repobrowser.core.Resource
 
 
-class GithubDataSource(private val api: GithubApi) : BaseApiDataSource(), IGithubDataSource {
+internal class GithubDataSource(private val api: GithubApi) : BaseApiDataSource(),
+    IGithubDataSource {
     override suspend fun browseRepositories(
         limit: Int,
         page: Int,

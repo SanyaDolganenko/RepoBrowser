@@ -11,7 +11,7 @@ import ua.dolhanenko.repobrowser.presentation.databinding.FragmentPagesHostBindi
 import ua.dolhanenko.repobrowser.presentation.history.HistoryFragment
 
 @AndroidEntryPoint
-class UserPagesHostFragment : BaseFragment<FragmentPagesHostBinding>() {
+internal class UserPagesHostFragment : BaseFragment<FragmentPagesHostBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentPagesHostBinding =
         FragmentPagesHostBinding::inflate
     private val browseFragment = BrowseFragment()

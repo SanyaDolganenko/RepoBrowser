@@ -13,7 +13,7 @@ import ua.dolhanenko.repobrowser.presentation.databinding.ActivityHostBinding
 import ua.dolhanenko.repobrowser.presentation.login.LoginFragment
 
 @AndroidEntryPoint
-class HostActivity : BaseActivity<ActivityHostBinding>(), LoginFragment.Callback {
+internal class HostActivity : BaseActivity<ActivityHostBinding>(), LoginFragment.Callback {
     override val bindingInflater: (LayoutInflater) -> ActivityHostBinding =
         ActivityHostBinding::inflate
     private val viewModel: HostVM by viewModels()

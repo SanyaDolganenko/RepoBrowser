@@ -3,7 +3,7 @@ package ua.dolhanenko.repobrowser.data.local
 import ua.dolhanenko.repobrowser.data.repository.datasource.IActiveTokenDataSource
 
 
-class ActiveTokenDataSource : IActiveTokenDataSource {
+internal class ActiveTokenDataSource : IActiveTokenDataSource {
     private var token: String? = null
     override fun getActiveToken(): String? = token
 

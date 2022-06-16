@@ -6,15 +6,16 @@ import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import java.util.*
 
 
-data class FilteredReposResponse(val total_count: Long, override val items: List<RepoResponse>) :
-    IFilteredRepositoriesModel {
+internal data class FilteredReposResponse(
+    val total_count: Long,
+    override val items: List<RepoResponse>
+) : IFilteredRepositoriesModel {
     override var pageNumber: Int = 0
     override val foundInTotal: Long
         get() = total_count
-
 }
 
-data class RepoResponse(
+internal data class RepoResponse(
     override val id: String,
     val name: String,
     val full_name: String?,
@@ -36,7 +37,7 @@ data class RepoResponse(
     }
 }
 
-data class Owner(val login: String, val avatar_url: String) : IOwnerModel {
+internal data class Owner(val login: String, val avatar_url: String) : IOwnerModel {
     override val name: String get() = login
     override val avatarUrl: String get() = avatar_url
 }

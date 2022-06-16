@@ -7,7 +7,7 @@ import ua.dolhanenko.repobrowser.domain.model.IRepositoryModel
 import java.util.*
 
 @Entity(primaryKeys = ["id", "byUserId"])
-data class Repository(
+internal data class Repository(
     override val id: String,
     val byUserId: Long,
     override val title: String,

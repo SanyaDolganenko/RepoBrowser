@@ -9,7 +9,7 @@ import androidx.viewbinding.ViewBinding
 import ua.dolhanenko.repobrowser.core.ILogger
 import javax.inject.Inject
 
-abstract class BaseFragment<VB : ViewBinding> : Fragment() {
+internal abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     protected abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
     private var _binding: VB? = null
     protected val binding get() = _binding!!

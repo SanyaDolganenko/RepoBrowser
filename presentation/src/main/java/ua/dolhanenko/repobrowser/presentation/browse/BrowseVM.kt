@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 @HiltViewModel
-class BrowseVM @Inject constructor(
+internal class BrowseVM @Inject constructor(
     private val filterUseCase: FilterReposUseCase,
     private val saveClickedRepoUseCase: SaveClickedRepoUseCase,
     private val getCachedReposUseCase: GetCachedReposUseCase
@@ -65,7 +65,7 @@ class BrowseVM @Inject constructor(
             filteredRepositories.postValue(listOf())
             return
         }
-        Log.d("BROWSE_VM", "Page end reached, loading more...")
+        logger.d("BROWSE_VM", "Page end reached, loading more...")
         val lastLoaded = lastLoadedPage.get() + 1
         val ids =
             (lastLoaded until lastLoaded + Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
@@ -124,7 +124,7 @@ class BrowseVM @Inject constructor(
     private fun appendRepositoriesForDisplay(number: Int, page: List<IRepositoryModel>) {
         viewModelScope.launch(Dispatchers.Main) {
             val current = filteredRepositories.value?.toMutableList() ?: mutableListOf()
-            Log.d(
+            logger.d(
                 "BROWSE_VM",
                 "Current size: ${current.size}. Appending page #$number ${page.size}"
             )
@@ -135,7 +135,7 @@ class BrowseVM @Inject constructor(
     }
 
     private fun postRepositoriesForDisplay(number: Int, page: List<IRepositoryModel>) {
-        Log.d(
+        logger.d(
             "BROWSE_VM",
             "Rewriting repositories with page #$number ${page.size}"
         )

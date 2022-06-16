@@ -19,7 +19,7 @@ import ua.dolhanenko.repobrowser.presentation.base.BaseVM
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginVM @Inject constructor(
+internal class LoginVM @Inject constructor(
     private val queryUserInfoUseCase: QueryUserInfoUseCase,
     private val saveActiveUserUseCase: SaveActiveUserUseCase,
     private val getActiveUserUseCase: GetActiveUserUseCase,

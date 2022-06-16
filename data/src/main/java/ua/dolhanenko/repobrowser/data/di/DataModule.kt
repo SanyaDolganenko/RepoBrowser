@@ -27,52 +27,52 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DataModule {
+internal object DataModule {
 
     @Singleton
     @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+    internal fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return AppDatabase.getInstance(context)
     }
 
     @Singleton
     @Provides
-    fun provideReposCacheDataSource(database: AppDatabase): IReposCacheDataSource {
+    internal fun provideReposCacheDataSource(database: AppDatabase): IReposCacheDataSource {
         return ReposCacheDataSource(database.repositoriesCacheDao())
     }
 
     @Singleton
     @Provides
-    fun provideUsersCacheDataSource(database: AppDatabase): IUsersCacheDataSource {
+    internal fun provideUsersCacheDataSource(database: AppDatabase): IUsersCacheDataSource {
         return UsersCacheDataSource(database.usersCacheDao())
     }
 
     @Singleton
     @Provides
-    fun provideActiveTokenDataSource(): IActiveTokenDataSource {
+    internal fun provideActiveTokenDataSource(): IActiveTokenDataSource {
         return ActiveTokenDataSource()
     }
 
     @Singleton
     @Provides
-    fun provideApiFactory(activeTokenDataSource: IActiveTokenDataSource): IApiFactory {
+    internal fun provideApiFactory(activeTokenDataSource: IActiveTokenDataSource): IApiFactory {
         return ApiFactory(activeTokenDataSource, Constants.API_BASE_URL)
     }
 
     @Singleton
     @Provides
-    fun provideGithubApi(factory: IApiFactory): GithubApi {
+    internal fun provideGithubApi(factory: IApiFactory): GithubApi {
         return factory.createDefaultRetrofit().create(GithubApi::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideGithubDataSource(api: GithubApi): IGithubDataSource {
+    internal fun provideGithubDataSource(api: GithubApi): IGithubDataSource {
         return GithubDataSource(api)
     }
 
     @Provides
-    fun provideReposRepository(
+    internal fun provideReposRepository(
         githubDataSource: IGithubDataSource,
         reposCacheDataSource: IReposCacheDataSource
     ): IReposRepository {
@@ -80,7 +80,7 @@ object DataModule {
     }
 
     @Provides
-    fun provideUsersRepository(
+    internal fun provideUsersRepository(
         activeTokenDataSource: IActiveTokenDataSource,
         githubDataSource: IGithubDataSource,
         usersCacheDataSource: IUsersCacheDataSource

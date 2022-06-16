@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import ua.dolhanenko.repobrowser.domain.model.IUserModel
 
 @Entity
-class AppUser(
+internal class AppUser(
     @PrimaryKey override val id: Long,
     override val userName: String,
     val isActive: Boolean = false,
