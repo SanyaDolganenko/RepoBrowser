@@ -29,10 +29,13 @@ internal class RepositoriesAdapter @Inject constructor(private val imageLoader: 
     var callback: Callback? = null
     var dataList: List<IRepositoryModel> = listOf()
         set(value) {
-            val callback = DiffCallback(field, value)
+            val callback =
+                DiffCallback(filterUsedForLastUpdate.equals(currentFilter).not(), field, value)
             field = value
             DiffUtil.calculateDiff(callback).dispatchUpdatesTo(this)
+            filterUsedForLastUpdate = currentFilter
         }
+    private var filterUsedForLastUpdate: String? = null
     var currentFilter: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -103,6 +106,7 @@ internal class RepositoriesAdapter @Inject constructor(private val imageLoader: 
     }
 
     private class DiffCallback(
+        private val filterChanged: Boolean,
         private val oldList: List<IRepositoryModel>,
         private val newList: List<IRepositoryModel>
     ) : DiffUtil.Callback() {
@@ -113,7 +117,7 @@ internal class RepositoriesAdapter @Inject constructor(private val imageLoader: 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            return oldItem == newItem && oldItem.readAt == newItem.readAt
+            return filterChanged.not() && oldItem == newItem
         }
 
         override fun getOldListSize(): Int = oldList.size

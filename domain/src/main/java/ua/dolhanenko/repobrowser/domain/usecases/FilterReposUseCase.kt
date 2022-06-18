@@ -10,8 +10,9 @@ import javax.inject.Inject
 class FilterReposUseCase @Inject constructor(private val reposRepository: IReposRepository) {
     operator fun invoke(
         filter: String,
-        pageNumbers: IntArray
+        startPage: Int,
+        endPage: Int
     ): Flow<Resource<IFilteredRepositoriesModel?>> {
-        return reposRepository.getFreshFilteredPagesAsync(filter, pageNumbers)
+        return reposRepository.downloadFilteredPages(filter, startPage, endPage)
     }
 }

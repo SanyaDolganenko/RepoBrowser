@@ -1,5 +1,6 @@
 package ua.dolhanenko.repobrowser.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -19,72 +20,67 @@ typealias UnpublishedPage = Pair<Int, Resource<IFilteredRepositoriesModel?>>
 internal class ReposRepository @Inject constructor(
     private val pageSize: Int,
     private val githubDataSource: IGithubDataSource,
-    private val reposCacheDataSource: IReposCacheDataSource
+    private val reposCacheDataSource: IReposCacheDataSource,
+    val logger: ILogger
 ) : IReposRepository {
     private companion object {
         const val LOG_TAG = "REPOS_REPO"
     }
 
-    @Inject
-    lateinit var logger: ILogger
+    private val loadedPagesCount: AtomicInteger = AtomicInteger(0)
+    private val sortedUnpublishedPages = mutableListOf<UnpublishedPage>()
 
-    private val loadedPages: AtomicInteger = AtomicInteger(0)
-    private var pageNumOffset: Int = 0
-    private val unpublishedPages: List<UnpublishedPage> = mutableListOf()
-
-    override fun getFreshFilteredPagesAsync(
+    override fun downloadFilteredPages(
         filter: String,
-        pageNumbers: IntArray
+        startPage: Int,
+        endPage: Int
     ): Flow<Resource<IFilteredRepositoriesModel?>> = channelFlow {
-        pageNumbers.minOrNull()?.let { pageNumOffset = it - 1 }
-        loadedPages.set(0)
-        pageNumbers.forEach { pageNumber ->
+        sortedUnpublishedPages.clear()
+        loadedPagesCount.set(0)
+        val pagesOffset = startPage - 1
+        for (page in startPage..endPage) {
             launch {
-                logger.d(LOG_TAG, "Fetching page #$pageNumber")
-                val pageResource = githubDataSource.browseRepositories(pageSize, pageNumber, filter)
-                val currentlyLoaded = loadedPages.incrementAndGet()
-                logger.d(LOG_TAG, "Currently loaded: $currentlyLoaded")
-                if (pageNumber - (currentlyLoaded + pageNumOffset) <= 0) {
-                    logger.d(LOG_TAG, "Emitting page #$pageNumber")
-                    trySend(pageResource)
-                } else {
-                    logger.d(
-                        LOG_TAG,
-                        "Saving unpublished page #$pageNumber for later"
-                    )
-                    pageResource.addToUnpublishedSafe(pageNumber)
-                }
-                processUnpublishedPages()
-                if (loadedPages.get() == pageNumbers.size) {
-                    logger.d(LOG_TAG, "All done. Closing channel")
-                    (unpublishedPages as MutableList).clear()
-                    close()
-                }
+                logger.d(LOG_TAG, "Fetching page #$page")
+                val pageResource = githubDataSource.browseRepositories(pageSize, page, filter)
+                val loadedPages = loadedPagesCount.incrementAndGet()
+                pageResource.addToUnpublishedSafe(page)
+                this@channelFlow.processUnpublishedPages(loadedPages, pagesOffset)
             }
         }
     }
 
     @Synchronized
     private fun Resource<IFilteredRepositoriesModel?>.addToUnpublishedSafe(pageNumber: Int) {
-        (unpublishedPages as MutableList).let {
+        sortedUnpublishedPages.let {
             it.add(pageNumber to this)
             it.sortBy { it.first }
         }
     }
 
     @Synchronized
-    private fun ProducerScope<Resource<IFilteredRepositoriesModel?>>.processUnpublishedPages() {
-        val iterator = (unpublishedPages as MutableList).iterator()
+    private suspend fun ProducerScope<Resource<IFilteredRepositoriesModel?>>.processUnpublishedPages(
+        loadedPagesCount: Int,
+        pagesOffset: Int
+    ) {
+        logger.d(
+            LOG_TAG,
+            "Processing unpublished pages. Loaded count: $loadedPagesCount offset: $pagesOffset"
+        )
+        val iterator = sortedUnpublishedPages.iterator()
         while (iterator.hasNext()) {
             val current = iterator.next()
-            val currentlyLoaded = loadedPages.get()
-            if (current.first - (currentlyLoaded + pageNumOffset) <= 0) {
-                logger.d(LOG_TAG, "Emitting unpublished page #${current.first}")
-                trySend(current.second)
+            val page = current.second
+            val pageNumber = current.first
+            if (pageNumber <= loadedPagesCount + pagesOffset) {
+                Log.d(LOG_TAG, "Emitting unpublished page #$pageNumber")
+                send(page)
                 iterator.remove()
             } else {
                 break
             }
+        }
+        if (sortedUnpublishedPages.isEmpty()) {
+//            channel.close()
         }
     }
 

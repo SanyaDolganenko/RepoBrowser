@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ua.dolhanenko.repobrowser.core.Constants
+import ua.dolhanenko.repobrowser.core.ILogger
 import ua.dolhanenko.repobrowser.data.local.ActiveTokenDataSource
 import ua.dolhanenko.repobrowser.data.local.ReposCacheDataSource
 import ua.dolhanenko.repobrowser.data.local.UsersCacheDataSource
@@ -74,9 +75,10 @@ internal object DataModule {
     @Provides
     internal fun provideReposRepository(
         githubDataSource: IGithubDataSource,
-        reposCacheDataSource: IReposCacheDataSource
+        reposCacheDataSource: IReposCacheDataSource,
+        logger: ILogger
     ): IReposRepository {
-        return ReposRepository(Constants.PAGE_SIZE, githubDataSource, reposCacheDataSource)
+        return ReposRepository(Constants.PAGE_SIZE, githubDataSource, reposCacheDataSource, logger)
     }
 
     @Provides

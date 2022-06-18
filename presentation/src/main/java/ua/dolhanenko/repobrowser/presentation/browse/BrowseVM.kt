@@ -1,7 +1,6 @@
 package ua.dolhanenko.repobrowser.presentation.browse
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -66,10 +65,13 @@ internal class BrowseVM @Inject constructor(
             return
         }
         logger.d("BROWSE_VM", "Page end reached, loading more...")
-        val lastLoaded = lastLoadedPage.get() + 1
-        val ids =
-            (lastLoaded until lastLoaded + Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
-        startLoadingPages(lastFilter!!, ids, false)
+        val lastLoadedPage = lastLoadedPage.get()
+        startLoadingPages(
+            lastFilter!!,
+            lastLoadedPage + 1,
+            lastLoadedPage + Constants.PAGES_PER_ASYNC_LOAD,
+            false
+        )
     }
 
     fun onFilterInput(filter: String?) {
@@ -80,32 +82,32 @@ internal class BrowseVM @Inject constructor(
             return
         }
         isDataLoading.postValue(true)
-        val ids = (1..Constants.PAGES_PER_ASYNC_LOAD).toList().toIntArray()
-        startLoadingPages(filter, ids, true)
+        startLoadingPages(filter, 1, Constants.PAGES_PER_ASYNC_LOAD, true)
     }
 
     private fun startLoadingPages(
         filter: String,
-        pageNumbers: IntArray,
+        startPage: Int,
+        lastPage: Int,
         startListFromScratch: Boolean
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            filterUseCase.invoke(filter, pageNumbers).collect {
+            filterUseCase.invoke(filter, startPage, lastPage).collect {
                 isDataLoading.postValue(false)
                 lastLoadedPage.getAndIncrement()
                 when (it) {
                     is Resource.Success -> {
                         it.data?.let {
-                            if (it.pageNumber > pageNumbers.first() || startListFromScratch.not()) {
+                            if (it.pageNumber > startPage || startListFromScratch.not()) {
                                 appendRepositoriesForDisplay(it.pageNumber, it.items)
-                            } else if (it.pageNumber == pageNumbers.first()) {
+                            } else if (it.pageNumber == startPage) {
                                 postRepositoriesForDisplay(it.pageNumber, it.items)
                             }
                             filteredFound.postValue(it.foundInTotal)
                         }
                     }
                     is Resource.Error -> {
-                        Log.e("BROWSE_VM", "Encountered status code: ${it.exception.message}")
+                        logger.e("BROWSE_VM", "Encountered status code: ${it.exception.message}")
                         it.exception.printStackTrace()
                     }
                 }
