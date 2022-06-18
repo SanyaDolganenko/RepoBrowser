@@ -72,7 +72,7 @@ internal class ReposRepository @Inject constructor(
             val page = current.second
             val pageNumber = current.first
             if (pageNumber <= loadedPagesCount + pagesOffset) {
-                Log.d(LOG_TAG, "Emitting unpublished page #$pageNumber")
+                logger.d(LOG_TAG, "Emitting unpublished page #$pageNumber")
                 send(page)
                 iterator.remove()
             } else {

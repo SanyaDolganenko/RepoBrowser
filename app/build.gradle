@@ -53,6 +53,7 @@ dependencies {
     implementation project(path: ':core')
     implementation project(path: ':data')
     implementation project(path: ':presentation')
+    implementation project(path: ':domain')
 
     //DI
     implementation "com.google.dagger:hilt-android:$hilt_version"
